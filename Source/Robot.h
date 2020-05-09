@@ -126,23 +126,25 @@ public:
 		modelMt = glm::rotate(PI, glm::vec3(0, 0, 1));
 		stackMat.push_back(modelMt);
 
-		modelMt = glm::vec3(0, 2.9 + position, 0);
+		modelMt = glm::rotate(modelMt, angle, glm::vec3(0, 1, 0));
+		modelMt = glm::translate(modelMt, glm::vec3(0, 2.9 + position, 0));
 		modelMt = body.setModelMt(&modelMt);
 		stackMat.push_back(modelMt);
 
 #pragma region ¥ª¤â
 
 		// ¥ª¤WÁu
-		ulefthand.setRotateZ(10);
+		modelMt = glm::rotate(modelMt, angles[1], glm::vec3(1, 0, 0));
+		modelMt = glm::rotate(modelMt, 10.0f, glm::vec3(0, 0, 1));
+		modelMt = glm::translate(modelMt, glm::vec3(3.7, 1, -0.5));
 		modelMt = ulefthand.setModelMt(&modelMt);
-		ulefthand.position = glm::vec3(3.7, 1, -0.5);
 
 		// ¥ªªÓ
 		modelMt = lshouder.setModelMt(&modelMt);
 
 		// ¥ª¤UÁu
-		dlefthand.setRotateX(ulefthand.rotationX - 20);
-		dlefthand.position = glm::vec3(0, -3, 0);
+		modelMt = glm::rotate(modelMt, angles[2] - 20, glm::vec3(1, 0, 0));
+		modelMt = glm::translate(modelMt, glm::vec3(0, -3, 0));
 		modelMt = dlefthand.setModelMt(&modelMt);
 
 		// ¥ª¤â´x

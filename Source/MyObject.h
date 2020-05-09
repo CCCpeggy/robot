@@ -73,9 +73,11 @@ protected:
 	std::vector<glm::vec3>	vertexs;
 	std::vector<glm::vec2>	uvs;
 	std::vector<glm::vec3>	normals;
-	glm::vec3 KDs;
-	glm::vec3 KAs;
-	glm::vec3 KSs;
+	std::vector<std::string> mtls;
+	std::vector<unsigned int> faces;
+	std::map<std::string, glm::vec3> KDs;
+	std::map<std::string, glm::vec3> KAs;
+	std::map<std::string, glm::vec3> KSs;
 	int type;
 
 public:
@@ -96,11 +98,10 @@ protected:
 		tinyobj::attrib_t attrib;
 		std::vector<tinyobj::shape_t> shapes;
 		std::vector<tinyobj::material_t> materials;
-
 		std::string warn;
 		std::string err;
 
-		bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, inputfile);
+		bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, inputfile, "../Assets/Robot/gundam.mtl");
 
 		if (!warn.empty()) {
 			std::cout << warn << std::endl;
@@ -151,6 +152,12 @@ protected:
 				shapes[s].mesh.material_ids[f];
 			}
 		}
+		for (int i= 0 ; i < materials.size(); i++) {
+			unsigned int face = materials[i].face;
+			std::string mtl = materials[i].name;
+			faces.push_back(face);
+			mtls.push_back(mtl);
+		}
 	}
 	void loadMyMtl(char* inputfile, int index = 0) {
 		std::vector<glm::vec3> Kds;
@@ -160,14 +167,10 @@ protected:
 		std::string texture;
 		loadMTL(inputfile, Kds, Kas, Kss, Materials, texture);
 		//printf("%d\n",texture);
-		if (Kds.size() > index) {
-			KDs = Kds[index];
-		}
-		if (Kas.size() > index) {
-			KAs = Kas[index];
-		}
-		if (Kss.size() > index) {
-			KSs = Kss[index];
+		for (int i = 0; i < Materials.size(); i++) {
+			std::string mtlname = Materials[i];
+			//  name            vec3
+			KDs[mtlname] = Kds[i];
 		}
 	}
 
@@ -274,9 +277,20 @@ public:
 
 	void draw() {
 		shader->setModelMt(&modelMt);
-		shader->setMaterial(KDs, KAs);
+		
 		if (offsets.size()) {
-			glDrawArraysInstanced(GL_TRIANGLES, 0, size(), offsets.size());
+			// glDrawArraysInstanced(GL_TRIANGLES, 0, size(), offsets.size());
+
+			int vertexIDoffset = 0;//glVertexID's offset 
+			std::string mtlname;
+			glm::vec3 Ks = glm::vec3(1, 1, 1);
+			for (int j = 0; j < mtls.size(); j++) {//
+				mtlname = mtls[j];
+			
+				shader->setMaterial(KDs[mtlname], Ks);
+				glDrawArraysInstanced(GL_TRIANGLES, vertexIDoffset, faces[j] * 3, offsets.size());
+				vertexIDoffset += faces[j] * 3;
+			}
 		}
 	}
 

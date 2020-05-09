@@ -225,6 +225,7 @@ namespace tinyobj {
         texture_option_t sheen_texopt;
         texture_option_t emissive_texopt;
         texture_option_t normal_texopt;
+        unsigned int face;
 
         int pad2;
 
@@ -1346,6 +1347,7 @@ namespace tinyobj {
         material->sheen_texname = "";
         material->emissive_texname = "";
         material->normal_texname = "";
+        material->face = 0;
 
         material->unknown_parameter.clear();
     }
@@ -2106,9 +2108,8 @@ namespace tinyobj {
             while (getline(f, s, sep)) {
                 paths.push_back(s);
             }
-
             for (size_t i = 0; i < paths.size(); i++) {
-                std::string filepath = JoinPath(paths[i], matId);
+                std::string filepath = paths[i];
 
                 std::ifstream matIStream(filepath.c_str());
                 if (matIStream) {
@@ -2189,14 +2190,6 @@ namespace tinyobj {
         }
 
         std::string baseDir = mtl_basedir ? mtl_basedir : "";
-        if (!baseDir.empty()) {
-#ifndef _WIN32
-            const char dirsep = '/';
-#else
-            const char dirsep = '\\';
-#endif
-            if (baseDir[baseDir.length() - 1] != dirsep) baseDir += dirsep;
-        }
         MaterialFileReader matFileReader(baseDir);
 
         return LoadObj(attrib, shapes, materials, warn, err, &ifs, &matFileReader,
@@ -2404,6 +2397,10 @@ namespace tinyobj {
                     face.vertex_indices.push_back(vi);
                     size_t n = strspn(token, " \t\r");
                     token += n;
+                }
+
+                if (material >= 0) {
+                    (*materials)[material].face++;
                 }
 
                 // replace with emplace_back + std::move on C++11
@@ -2849,6 +2846,10 @@ namespace tinyobj {
 
                 if (callback.usemtl_cb) {
                     callback.usemtl_cb(user_data, namebuf.c_str(), material_id);
+                }
+
+                if (material_id > 0) {
+                    materials[material_id].face++;
                 }
 
                 continue;
