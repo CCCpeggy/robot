@@ -5,6 +5,7 @@
 
 #define INSTANCE 0
 #define NORMAL 1
+#define PI 3.14159265358979f
 
 bool loadMTL(const char* path,
 	std::vector<glm::vec3>& Kd,
@@ -68,8 +69,6 @@ protected:
 	GLuint vertexs_vbo;
 	GLuint uvs_vbo;
 	GLuint normals_vbo;
-	GLuint kas_vbo;
-	GLuint kds_vbo;
 	std::vector<glm::vec3>	offsets;
 	std::vector<glm::vec3>	vertexs;
 	std::vector<glm::vec2>	uvs;
@@ -77,12 +76,15 @@ protected:
 	glm::vec3 KDs;
 	glm::vec3 KAs;
 	glm::vec3 KSs;
+	int type;
 
 public:
 
 	MyShader* shader;
 
-	glm::vec3 rotation;
+	float rotationX;
+	float rotationY;
+	float rotationZ;
 	glm::vec3 translate;
 	glm::vec3 position;
 	glm::mat4x4 modelMt;
@@ -170,16 +172,23 @@ protected:
 	}
 
 public:
-	MyObject(MyShader *shader, int Type = NORMAL): shader(shader)
+	MyObject(MyShader *shader, int type = NORMAL): 
+		shader(shader),
+		rotationX(0),
+		rotationY(0),
+		rotationZ(0),
+		translate(0),
+		position(0),
+		type(type)
 	{
-		if (Type == NORMAL) {
+		if (type == NORMAL) {
 			offsets.push_back(glm::vec3(0, 0, 0));
 		}
-	}
-	void init(char* objFile, char* mtlFIle = nullptr, int index = 0) {
 		glGenVertexArrays(1, &vao);
 		glBindVertexArray(vao);
-
+	}
+	void init(char* objFile, char* mtlFIle = nullptr, int index = 0) {
+		glBindVertexArray(vao);
 		loadMyObj(objFile);
 
 		glGenBuffers(1, &vertexs_vbo);
@@ -205,6 +214,9 @@ public:
 		glEnableVertexAttribArray(3);
 		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 		glVertexAttribDivisor(3, 1);
+		if (type == NORMAL) {
+			glBufferData(GL_ARRAY_BUFFER, offsets.size() * sizeof(float) * 3, &offsets[0], GL_STATIC_DRAW);
+		}
 
 		if (mtlFIle) {
 			loadMyMtl(mtlFIle, index);
@@ -214,18 +226,12 @@ public:
 
 	void use() {
 		shader->use();
-		if (offsets.size()) {
-			glBindVertexArray(vao);
+		glBindVertexArray(vao);
+
+		if (type == INSTANCE && offsets.size()) {
 			glBindBuffer(GL_ARRAY_BUFFER, offsets_vbo);
 			glBufferData(GL_ARRAY_BUFFER, offsets.size() * sizeof(float) * 3, &offsets[0], GL_DYNAMIC_DRAW);
 		}
-	}
-
-	glm::mat4x4 getModelMt (glm::mat4x4* modelMt) {
-		glm::mat4x4 matrix = glm::mat4x4(1);
-		matrix = glm::translate(matrix, glm::vec3(4.0f));
-		// TODO: rotation
-		return (*modelMt) * matrix;
 	}
 
 	void setMt(glm::mat4x4* modelMt, glm::mat4x4* viewMt = nullptr, glm::mat4x4* projectMt = nullptr) {
@@ -237,9 +243,29 @@ public:
 		glm::mat4x4 matrix = glm::mat4x4(1);
 		matrix = glm::translate(matrix, translate);
 		matrix = glm::translate(matrix, position);
-		// TODO: rotation
-		this -> modelMt = (*modelMt) * matrix;
-		return matrix;
+		matrix = glm::rotate(matrix, rotationX / 180 * PI, glm::vec3(0, 0, 1));
+		matrix = glm::rotate(matrix, rotationY / 180 * PI, glm::vec3(0, 1, 0));
+		matrix = glm::rotate(matrix, rotationZ / 180 * PI, glm::vec3(1, 0, 0));
+		this -> modelMt = matrix * (*modelMt);
+		return this->modelMt;
+	}
+
+	void setRotate(int x, int y, int z) {
+		rotationX = (x + 360) % 360;
+		rotationY = (y + 360) % 360;
+		rotationZ = (z + 360) % 360;
+	}
+
+	void setRotateX(int x) {
+		rotationX = (x + 360) % 360;
+	}
+
+	void setRotateY(int y) {
+		rotationY = (y + 360) % 360;
+	}
+
+	void setRotateZ(int z) {
+		rotationZ = (z + 360) % 360;
 	}
 
 	void setViewProjectMt(glm::mat4x4* viewMt = nullptr, glm::mat4x4* projectMt = nullptr) {

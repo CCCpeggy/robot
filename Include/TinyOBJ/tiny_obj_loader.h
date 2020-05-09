@@ -2119,8 +2119,8 @@ namespace tinyobj {
             }
 
             std::stringstream ss;
-            ss << "Material file [ " << matId
-                << " ] not found in a path : " << m_mtlBaseDir << std::endl;
+            // ss << "Material file [ " << matId
+            //     << " ] not found in a path : " << m_mtlBaseDir << std::endl;
             if (warn) {
                 (*warn) += ss.str();
             }
@@ -2137,8 +2137,8 @@ namespace tinyobj {
             }
 
             std::stringstream ss;
-            ss << "Material file [ " << filepath
-                << " ] not found in a path : " << m_mtlBaseDir << std::endl;
+            // ss << "Material file [ " << filepath
+            //     << " ] not found in a path : " << m_mtlBaseDir << std::endl;
             if (warn) {
                 (*warn) += ss.str();
             }
@@ -2893,9 +2893,9 @@ namespace tinyobj {
 
                         if (!found) {
                             if (warn) {
-                                (*warn) +=
-                                    "Failed to load material file(s). Use default "
-                                    "material.\n";
+                                // (*warn) +=
+                                //     "Failed to load material file(s). Use default "
+                                //     "material.\n";
                             }
                         }
                         else {

@@ -3,16 +3,6 @@
 #include "../Source/MyShader.h"
 #include <conio.h>
 
-#define SIZE_1		1
-#define SIZE_2		2
-#define MENU_EXIT   3
-
-float					aspect;			
-float					backgroundGray = 1.0f;
-float					teapot_size = 1.0f;
-
-std::vector<glm::mat4x4> stackMat;
-
 glm::mat4x4 modelMt;
 glm::mat4x4 viewMt;
 glm::mat4x4 projectMt;
@@ -23,17 +13,7 @@ MyShader *robotShader;
 // 渲染事件, 用來在場景上繪製東西
 
 void My_Init() {
-	glewInit();
-
 	robotShader = new MyShader("../Source/basicShader.vs", "../Source/basicShader.fs");
-
-	//ShaderInfo shaders[] = {
-	//	{ GL_VERTEX_SHADER, "DSPhong_Material.vp" },//vertex shader
-	//	{ GL_FRAGMENT_SHADER, "DSPhong_Material.fp" },//fragment shader
-	//	{ GL_NONE, NULL } };
-	//program = LoadShaders(shaders);//讀取shader
-
-	//Attach Shader to program
 
 	projectMt = glm::perspective(80.0f, 4.0f / 4.0f, 0.1f, 100.0f);
 	//glm::mat4 Projection = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.0f,100.0f); // In world coordinates
@@ -53,10 +33,9 @@ void My_Display()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	modelMt = glm::mat4(1.0f);
-	modelMt = glm::scale(modelMt, glm::vec3(4.0f));
+	modelMt = glm::scale(modelMt, glm::vec3(1.0f));
 
 
-	robot -> use();
 	robot -> setMt(&modelMt, &viewMt, &projectMt);
 	robot -> update();
 	robot -> draw();
@@ -80,26 +59,31 @@ void My_Timer(int val)
 
 int main(int argc, char **argv)
 {
-#ifdef __APPLE__
-	//更改工作路徑
-	chdir(__FILEPATH__("/../Assets/"));
-#endif
-
 	// 初始化GLUT,並創立一個視窗.
 	////////////////////
 	glutInit(&argc, argv);
+	glutInitContextVersion(4, 3);//以OpenGL version4.3版本為基準
+	glutInitContextFlags(GLUT_FORWARD_COMPATIBLE);//是否向下相容,GLUT_FORWARD_COMPATIBLE不支援(?
+	glutInitContextProfile(GLUT_CORE_PROFILE);
 
 	//multisample for golygons smooth
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
 
-	glutInitWindowPosition(100, 100);
-	glutInitWindowSize(800, 800);
+	//glutInitWindowPosition(100, 100);
+	glutInitWindowSize(800, 600);
+	
+	glutCreateWindow("HW1"); 
+
+	glewExperimental = GL_TRUE; //置於glewInit()之前
+	if (glewInit()) {
+		std::cerr << "Unable to initialize GLEW ... exiting" << std::endl;//c error
+		exit(EXIT_FAILURE);
+	}
 
 	glEnable(GL_DEPTH_TEST);
 	glCullFace(GL_BACK);
 	glEnable(GL_CULL_FACE);
-	
-	glutCreateWindow("HW1"); 
+
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	My_Init();
 	
