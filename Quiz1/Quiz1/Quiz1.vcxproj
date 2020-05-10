@@ -18,6 +18,7 @@
     <None Include="..\..\Source\basicShader.vs" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\Menu.h" />
     <ClInclude Include="..\..\Source\MyObject.h" />
     <ClInclude Include="..\..\Source\Robot.h" />
     <ClInclude Include="..\..\Source\MyShader.h" />

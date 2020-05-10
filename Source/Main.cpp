@@ -1,6 +1,7 @@
 ﻿#include "../Include/Common.h"
 #include "../Source/Robot.h"
 #include "../Source/MyShader.h"
+#include "../Source/Menu.h"
 #include <conio.h>
 
 glm::mat4x4 modelMt;
@@ -9,7 +10,7 @@ glm::mat4x4 projectMt;
 float eyeAngley = 0.0;
 float eyedistance = 20.0;
 
-Robot *robot;
+extern Robot *robot;
 MyShader *robotShader;
 
 // 渲染事件, 用來在場景上繪製東西
@@ -51,6 +52,16 @@ void My_Display()
 	glutSwapBuffers();
 }
 
+void ReshapeWindow(int w, int h) {
+	if (h == 0) h = 1;
+	projectMt = glm::perspective(80.0f, 4.0f / 3.0f, 0.1f, 100.0f);
+}
+
+void Mouse(int button, int state, int x, int y) {
+	if (button == 2) {
+
+	}
+}
 
 //計時器事件, 經指定時間後該函式被呼叫
 void My_Timer(int val)
@@ -82,9 +93,7 @@ void keyUpdate(unsigned char key, int x, int y) {
 		break;
 	}
 	robot->keyUpdate(key, x, y);
-	glutPostRedisplay();
 }
-
 
 int main(int argc, char **argv)
 {
@@ -114,14 +123,17 @@ int main(int argc, char **argv)
 	glEnable(GL_CULL_FACE);
 
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+
 	My_Init();
 
-	glutKeyboardFunc(keyUpdate);
-	
 	//註冊GLUT回呼事件
 	////////////////////
 	glutDisplayFunc(My_Display);
 	glutTimerFunc(60, My_Timer, 0);
+	glutKeyboardFunc(keyUpdate);
+	glutReshapeFunc(ReshapeWindow);
+
+	Menu::create();
     
 	// 進入主迴圈
 	glutMainLoop();

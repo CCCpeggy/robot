@@ -6,6 +6,9 @@
 #define PARTSNUM 18
 
 class Robot {
+public:
+	const int MODE_WALK;
+	const int MODE_IDLE;
 protected:
 	MyObject body;
 	MyObject ulefthand;
@@ -34,8 +37,6 @@ protected:
 	float angle = 0.0;
 
 private:
-	const int MODE_WALK;
-	const int MODE_IDLE;
 	int frame;
 	int mode;
 
@@ -62,7 +63,7 @@ public:
 		MODE_WALK(1),
 		MODE_IDLE(0),
 		frame(0),
-		mode(MODE_WALK)
+		mode(MODE_IDLE)
 	{
 		allObjs.push_back(&body);
 		body.init("../Assets/Robot/body.obj", "../Assets/Robot/gundam.mtl", 0);
@@ -135,6 +136,9 @@ public:
 	void update() {
 		if (mode == MODE_WALK) {
 			updateWalkFrame();
+		}
+		else if (mode == MODE_IDLE) {
+			updateIdleFrame();
 		}
 		glm::mat4 Rotatation[PARTSNUM];
 		glm::mat4 Translation[PARTSNUM];
@@ -284,8 +288,18 @@ public:
 	}
 
 	void switchMode(int mode) {
-		this->mode = mode;
-		frame = 0;
+		if (this->mode != mode) {
+			this->mode = mode;
+			frame = 0;
+		}
+	}
+
+	void updateIdleFrame() {
+		angles[1] = 0;
+		angles[2] = 0;
+		angles[12] = 0;
+		angles[13] = 0;
+		position = 0;
 	}
 
 	void updateWalkFrame() {
