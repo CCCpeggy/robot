@@ -3,65 +3,8 @@
 #include "../Include/Common.h"
 #include "MyShader.h"
 
-#define INSTANCE 0
-#define NORMAL 1
 #define PI 3.14159265358979f
 #define DOR(angle) ((angle) * PI / 180);
-
-bool loadMTL(const char* path,
-	std::vector<glm::vec3>& Kd,
-	std::vector<glm::vec3>& Ka,
-	std::vector<glm::vec3>& Ks,
-	std::vector<std::string>& out_name,
-	std::string& texture
-)
-{
-	FILE* file = fopen(path, "r");
-	if (file == NULL) {
-		printf("Impossible to open the .mtl file ! Are you in the right path ? See Tutorial 1 for details\n");
-		return false;
-	}
-	while (1) {
-		char lineHeader[128];
-		// read the first word of the line
-		int res = fscanf(file, "%s", lineHeader);
-		if (res == EOF)
-			break; // EOF = End Of File. Quit the loop.
-
-		// else : parse lineHeader
-		if (strcmp(lineHeader, "newmtl") == 0) {
-			char material[50];
-			fscanf(file, "%s", material);
-			out_name.push_back(material);
-		}
-		else if (strcmp(lineHeader, "Kd") == 0) {
-			glm::vec3 diffuse;
-			fscanf(file, "%f %f %f\n", &diffuse.x, &diffuse.y, &diffuse.z);
-			Kd.push_back(diffuse);
-		}
-		else if (strcmp(lineHeader, "Ka") == 0) {
-			glm::vec3 ambient;
-			fscanf(file, "%f %f %f\n", &ambient.x, &ambient.y, &ambient.z);
-			Ka.push_back(ambient);
-		}
-		else if (strcmp(lineHeader, "Ks") == 0) {
-			glm::vec3 specular;
-			fscanf(file, "%f %f %f\n", &specular.x, &specular.y, &specular.z);
-			Ks.push_back(specular);
-		}
-		else if (strcmp(lineHeader, "map_Kd") == 0) {
-			fscanf(file, "%s\n", texture);
-
-		}
-		else {
-			// Probably a comment, eat up the rest of the line
-			char stupidBuffer[1000];
-			fgets(stupidBuffer, 1000, file);
-		}
-	}
-
-	return true;
-}
 
 class MyObject {
 protected:
@@ -78,17 +21,13 @@ protected:
 	std::vector<std::string> mtls;
 	std::vector<unsigned int> faces;
 	std::vector<glm::vec3>	KDs;
-	int type;
+	int drawType;
 
 public:
-
+	static const int DRAW_TYPE_INSTANCE;
+	static const int DRAW_TYPE_NORMAL;
 	MyShader* shader;
 
-	float rotationX;
-	float rotationY;
-	float rotationZ;
-	glm::vec3 translate;
-	glm::vec3 position;
 	glm::mat4x4 modelMt;
 
 protected:
@@ -151,16 +90,11 @@ protected:
 	}
 
 public:
-	MyObject(MyShader *shader, int type = NORMAL): 
+	MyObject(MyShader *shader, int type = DRAW_TYPE_NORMAL): 
 		shader(shader),
-		rotationX(0),
-		rotationY(0),
-		rotationZ(0),
-		translate(0),
-		position(0),
-		type(type)
+		drawType(type)
 	{
-		if (type == NORMAL) {
+		if (type == DRAW_TYPE_NORMAL) {
 			offsets.push_back(glm::vec3(0, 0, 0));
 		}
 		glGenVertexArrays(1, &vao);
@@ -193,7 +127,7 @@ public:
 		glEnableVertexAttribArray(3);
 		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 		glVertexAttribDivisor(3, 1);
-		if (type == NORMAL) {
+		if (drawType == DRAW_TYPE_NORMAL) {
 			glBufferData(GL_ARRAY_BUFFER, offsets.size() * sizeof(float) * 3, &offsets[0], GL_STATIC_DRAW);
 		}
 
@@ -209,7 +143,7 @@ public:
 		shader->use();
 		glBindVertexArray(vao);
 
-		if (type == INSTANCE && offsets.size()) {
+		if (drawType == DRAW_TYPE_INSTANCE && offsets.size()) {
 			glBindBuffer(GL_ARRAY_BUFFER, offsets_vbo);
 			glBufferData(GL_ARRAY_BUFFER, offsets.size() * sizeof(float) * 3, &offsets[0], GL_DYNAMIC_DRAW);
 		}
@@ -233,7 +167,10 @@ public:
 	void draw() {
 		shader->setModelMt(&(glm::rotate(modelMt, 0.0f, glm::vec3(0, 0, 1))));
 		
-		if (offsets.size()) {
+		if (drawType == DRAW_TYPE_NORMAL) {
+			glDrawArrays(GL_TRIANGLES, 0, size());
+		}
+		else if (drawType == DRAW_TYPE_INSTANCE && offsets.size()) {
 			glDrawArraysInstanced(GL_TRIANGLES, 0, size(), offsets.size());
 		}
 	}
@@ -242,4 +179,7 @@ public:
 		return vertexs.size();
 	}
 };
+
+const int MyObject::DRAW_TYPE_INSTANCE = 0;
+const int MyObject::DRAW_TYPE_NORMAL = 1;
 #endif

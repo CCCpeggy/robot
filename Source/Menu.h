@@ -15,8 +15,8 @@ namespace Menu{
 		int ActionMenu, ModeMenu, ShaderMenu;
 		ActionMenu = glutCreateMenu(ActionMenuEvents);//建立右鍵菜單
 		//加入右鍵物件
-		glutAddMenuEntry("idle", robot->MODE_IDLE);
-		glutAddMenuEntry("walk", robot->MODE_WALK);
+		glutAddMenuEntry("idle", Robot::MODE_IDLE);
+		glutAddMenuEntry("walk", Robot::MODE_WALK);
 		glutAttachMenu(GLUT_RIGHT_BUTTON);	//與右鍵關聯
 
 		// ModeMenu = glutCreateMenu(ModeMenuEvents);//建立右鍵菜單

@@ -7,8 +7,8 @@
 
 class Robot {
 public:
-	const int MODE_WALK;
-	const int MODE_IDLE;
+	static const int MODE_WALK;
+	static const int MODE_IDLE;
 protected:
 	MyObject body;
 	MyObject ulefthand;
@@ -33,15 +33,15 @@ protected:
 	std::vector<glm::mat4x4> stackMat;
 
 	float angles[PARTSNUM];
-	float position = 0.0;
-	float angle = 0.0;
+	float position;
+	float angle;
 
 private:
 	int frame;
 	int mode;
 
 public:
-	Robot(MyShader* shader):
+	Robot(MyShader* shader = nullptr):
 		body(shader),
 		ulefthand(shader),
 		dlefthand(shader),
@@ -60,10 +60,11 @@ public:
 		urightleg(shader),
 		drightleg(shader),
 		rightfoot(shader),
-		MODE_WALK(1),
-		MODE_IDLE(0),
 		frame(0),
-		mode(MODE_IDLE)
+		mode(MODE_IDLE),
+		angle(0),
+		position(0),
+		angles{0}
 	{
 		allObjs.push_back(&body);
 		body.init("../Assets/Robot/body.obj", "../Assets/Robot/gundam.mtl", 0);
@@ -118,11 +119,8 @@ public:
 		 
 		 allObjs.push_back(&rightfoot);
 		 rightfoot.init("../Assets/Robot/rightfoot.obj", "../Assets/Robot/gundam.mtl", 17);
-
-
-		for (int i = 0; i < PARTSNUM; i++)
-			angles[i] = 0.0;
 	}
+	
 	void setMt(glm::mat4x4* modelMt, glm::mat4x4* viewMt = nullptr, glm::mat4x4* projectMt = nullptr) {
 		for (std::vector<MyObject*>::iterator iter = allObjs.begin();
 			iter != allObjs.end();
@@ -133,6 +131,7 @@ public:
 			(*iter)->setViewProjectMt(viewMt, projectMt);
 		}
 	}
+	
 	void update() {
 		if (mode == MODE_WALK) {
 			updateWalkFrame();
@@ -350,6 +349,7 @@ public:
 			break;
 		}
 	}
+	
 	void draw() {
 		for (std::vector<MyObject*>::iterator iter = allObjs.begin();
 			iter != allObjs.end();
@@ -359,6 +359,8 @@ public:
 			(*iter)->draw();
 		}
 	}
-		
 };
+
+const int Robot::MODE_WALK = 1;
+const int Robot::MODE_IDLE = 0;
 #endif
