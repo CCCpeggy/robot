@@ -15,14 +15,14 @@ MyShader *robotShader;
 void My_Init() {
 	robotShader = new MyShader("../Source/basicShader.vs", "../Source/basicShader.fs");
 
-	projectMt = glm::perspective(80.0f, 4.0f / 4.0f, 0.1f, 100.0f);
+	projectMt = glm::perspective(80.0f, 4.0f / 3.0f, 0.1f, 100.0f);
 	//glm::mat4 Projection = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.0f,100.0f); // In world coordinates
 
 	// Camera matrix
 	viewMt = glm::lookAt(
 		glm::vec3(0, 10, 25), // Camera is at (0,10,25), in World Space
 		glm::vec3(0, 0, 0), // and looks at the origin
-		glm::vec3(0, 1, 0)  // Head is up (set to 0,1,0 to look upside-down)
+		glm::vec3(0, -1, 0)  // Head is up (set to 0,1,0 to look upside-down)
 	);
 
 	robot = new Robot(robotShader);
@@ -33,11 +33,9 @@ void My_Display()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	modelMt = glm::mat4(1.0f);
-	modelMt = glm::scale(modelMt, glm::vec3(1.0f));
 
 
 	robot -> setMt(&modelMt, &viewMt, &projectMt);
-	robot -> update();
 	robot -> draw();
 
 	glFlush();//強制執行上次的OpenGL commands
@@ -54,6 +52,9 @@ void My_Timer(int val)
 	char ch;
 	if (_kbhit()) {
 	}
+
+	robot -> update();
+	My_Display();
 }
 
 
@@ -90,7 +91,7 @@ int main(int argc, char **argv)
 	//註冊GLUT回呼事件
 	////////////////////
 	glutDisplayFunc(My_Display);
-	glutTimerFunc(16, My_Timer, 0);
+	glutTimerFunc(60, My_Timer, 0);
     
 	// 進入主迴圈
 	glutMainLoop();

@@ -6,6 +6,7 @@
 #define INSTANCE 0
 #define NORMAL 1
 #define PI 3.14159265358979f
+#define DOR(angle) (angle * PI / 180);
 
 bool loadMTL(const char* path,
 	std::vector<glm::vec3>& Kd,
@@ -244,31 +245,8 @@ public:
 
 	glm::mat4x4 setModelMt(glm::mat4x4* modelMt) {
 		glm::mat4x4 matrix = glm::mat4x4(1);
-		matrix = glm::translate(matrix, translate);
-		matrix = glm::translate(matrix, position);
-		matrix = glm::rotate(matrix, rotationX / 180 * PI, glm::vec3(0, 0, 1));
-		matrix = glm::rotate(matrix, rotationY / 180 * PI, glm::vec3(0, 1, 0));
-		matrix = glm::rotate(matrix, rotationZ / 180 * PI, glm::vec3(1, 0, 0));
 		this -> modelMt = matrix * (*modelMt);
 		return this->modelMt;
-	}
-
-	void setRotate(int x, int y, int z) {
-		rotationX = (x + 360) % 360;
-		rotationY = (y + 360) % 360;
-		rotationZ = (z + 360) % 360;
-	}
-
-	void setRotateX(int x) {
-		rotationX = (x + 360) % 360;
-	}
-
-	void setRotateY(int y) {
-		rotationY = (y + 360) % 360;
-	}
-
-	void setRotateZ(int z) {
-		rotationZ = (z + 360) % 360;
 	}
 
 	void setViewProjectMt(glm::mat4x4* viewMt = nullptr, glm::mat4x4* projectMt = nullptr) {
@@ -276,7 +254,7 @@ public:
 	}
 
 	void draw() {
-		shader->setModelMt(&modelMt);
+		shader->setModelMt(&(glm::rotate(modelMt, 0.0f, glm::vec3(0, 0, 1))));
 		
 		if (offsets.size()) {
 			// glDrawArraysInstanced(GL_TRIANGLES, 0, size(), offsets.size());

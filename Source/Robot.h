@@ -32,36 +32,44 @@ protected:
 	float angles[PARTSNUM];
 	float position = 0.0;
 	float angle = 0.0;
-	float eyeAngley = 0.0;
-	float eyedistance = 20.0;
+
+private:
+	const int MODE_WALK;
+	const int MODE_IDLE;
+	int frame;
+	int mode;
 
 public:
 	Robot(MyShader* shader):
-	body(shader),
-	ulefthand(shader),
-	dlefthand(shader),
-	lefthand(shader),
-	lshouder(shader),
-	head(shader),
-	urighthand(shader),
-	drighthand(shader),
-	righthand(shader),
-	rshouder(shader),
-	dbody(shader),
-	back2(shader),
-	uleftleg(shader),
-	dleftleg(shader),
-	leftfoot(shader),
-	urightleg(shader),
-	drightleg(shader),
-	rightfoot(shader)
+		body(shader),
+		ulefthand(shader),
+		dlefthand(shader),
+		lefthand(shader),
+		lshouder(shader),
+		head(shader),
+		urighthand(shader),
+		drighthand(shader),
+		righthand(shader),
+		rshouder(shader),
+		dbody(shader),
+		back2(shader),
+		uleftleg(shader),
+		dleftleg(shader),
+		leftfoot(shader),
+		urightleg(shader),
+		drightleg(shader),
+		rightfoot(shader),
+		MODE_WALK(1),
+		MODE_IDLE(0),
+		frame(0),
+		mode(MODE_WALK)
 	{
 		allObjs.push_back(&body);
 		body.init("../Assets/Robot/body.obj", "../Assets/Robot/gundam.mtl", 0);
 
 		allObjs.push_back(&ulefthand);
 		ulefthand.init("../Assets/Robot/ulefthand.obj", "../Assets/Robot/gundam.mtl", 1);
-		
+		 
 		allObjs.push_back(&dlefthand);
 		dlefthand.init("../Assets/Robot/dlefthand.obj", "../Assets/Robot/gundam.mtl", 2);
 		
@@ -85,7 +93,7 @@ public:
 		
 		allObjs.push_back(&rshouder);
 		rshouder.init("../Assets/Robot/rshouder.obj", "../Assets/Robot/gundam.mtl", 9);
-
+		
 		allObjs.push_back(&back2);
 		back2.init("../Assets/Robot/back2.obj", "../Assets/Robot/gundam.mtl", 10);
 		
@@ -95,20 +103,24 @@ public:
 		allObjs.push_back(&uleftleg);
 		uleftleg.init("../Assets/Robot/uleftleg.obj", "../Assets/Robot/gundam.mtl", 12);
 		
-		allObjs.push_back(&dleftleg);
-		dleftleg.init("../Assets/Robot/dleftleg.obj", "../Assets/Robot/gundam.mtl", 13);
-		
-		allObjs.push_back(&leftfoot);
-		urightleg.init("../Assets/Robot/leftfoot.obj", "../Assets/Robot/gundam.mtl", 14);
-		
-		allObjs.push_back(&urightleg);
-		urightleg.init("../Assets/Robot/urightleg.obj", "../Assets/Robot/gundam.mtl", 15);
-		
-		allObjs.push_back(&drightleg);
-		drightleg.init("../Assets/Robot/drightleg.obj", "../Assets/Robot/gundam.mtl", 16);
-		
-		allObjs.push_back(&rightfoot);
-		rightfoot.init("../Assets/Robot/rightfoot.obj", "../Assets/Robot/gundam.mtl", 17);
+		 allObjs.push_back(&dleftleg);
+		 dleftleg.init("../Assets/Robot/dleftleg.obj", "../Assets/Robot/gundam.mtl", 13);
+		 
+		 allObjs.push_back(&leftfoot);
+		 leftfoot.init("../Assets/Robot/leftfoot.obj", "../Assets/Robot/gundam.mtl", 14);
+		 
+		 allObjs.push_back(&urightleg);
+		 urightleg.init("../Assets/Robot/urightleg.obj", "../Assets/Robot/gundam.mtl", 15);
+		 
+		 allObjs.push_back(&drightleg);
+		 drightleg.init("../Assets/Robot/drightleg.obj", "../Assets/Robot/gundam.mtl", 16);
+		 
+		 allObjs.push_back(&rightfoot);
+		 rightfoot.init("../Assets/Robot/rightfoot.obj", "../Assets/Robot/gundam.mtl", 17);
+
+
+		for (int i = 0; i < PARTSNUM; i++)
+			angles[i] = 0.0;
 	}
 	void setMt(glm::mat4x4* modelMt, glm::mat4x4* viewMt = nullptr, glm::mat4x4* projectMt = nullptr) {
 		for (std::vector<MyObject*>::iterator iter = allObjs.begin();
@@ -121,72 +133,137 @@ public:
 		}
 	}
 	void update() {
-		updatePos(0);
-		glm::mat4x4 modelMt = this->modelMt;
-		modelMt = glm::rotate(PI, glm::vec3(0, 0, 1));
-		stackMat.push_back(modelMt);
+		if (mode == MODE_WALK) {
+			updateWalkFrame();
+		}
+		glm::mat4 Rotatation[PARTSNUM];
+		glm::mat4 Translation[PARTSNUM];
+		for (int i = 0; i < PARTSNUM; i++) {
+			Rotatation[i] = glm::mat4(1.0f);
+			Translation[i] = glm::mat4(1.0f);
+		}
+		float r, pitch, yaw, roll;
+		float alpha, beta, gamma;
 
-		modelMt = glm::rotate(modelMt, angle, glm::vec3(0, 1, 0));
-		modelMt = glm::translate(modelMt, glm::vec3(0, 2.9 + position, 0));
-		modelMt = body.setModelMt(&modelMt);
-		stackMat.push_back(modelMt);
+		//Body
+		beta = DOR(angle);
+		Rotatation[0] = glm::rotate(beta, glm::vec3(0, 1, 0));
+		Translation[0] = glm::translate(glm::vec3(0, 2.9 + position, 0));
+		body.setModelMt(&(this->modelMt * Translation[0] * Rotatation[0]));
+		//左手=======================================================
+		//左上手臂
+		yaw = DOR(beta); r = 3.7;
+		alpha = DOR(angles[1]);
+		gamma = DOR(10);
+		Rotatation[1] = glm::rotate(alpha, glm::vec3(1, 0, 0)) * glm::rotate(gamma, glm::vec3(0, 0, 1));//向前旋轉*向右旋轉
+		Translation[1] = glm::translate(glm::vec3(3.7, 1, -0.5));
 
-#pragma region 左手
+		ulefthand.setModelMt(&(body.modelMt * Translation[1] * Rotatation[1]));
 
-		// 左上臂
-		modelMt = glm::rotate(modelMt, angles[1], glm::vec3(1, 0, 0));
-		modelMt = glm::rotate(modelMt, 10.0f, glm::vec3(0, 0, 1));
-		modelMt = glm::translate(modelMt, glm::vec3(3.7, 1, -0.5));
-		modelMt = ulefthand.setModelMt(&modelMt);
+		//左肩膀
+		lshouder.setModelMt(&(ulefthand.modelMt));
 
-		// 左肩
-		modelMt = lshouder.setModelMt(&modelMt);
+		//左下手臂
+		alpha = DOR(angles[2] - 20);
+		//上手臂+下手臂向前旋轉*向右旋轉
+		Rotatation[2] = glm::rotate(alpha, glm::vec3(1, 0, 0));
+		Translation[2] = glm::translate(glm::vec3(0, -3, 0));
 
-		// 左下臂
-		modelMt = glm::rotate(modelMt, angles[2] - 20, glm::vec3(1, 0, 0));
-		modelMt = glm::translate(modelMt, glm::vec3(0, -3, 0));
-		modelMt = dlefthand.setModelMt(&modelMt);
+		dlefthand.setModelMt(&(ulefthand.modelMt * Translation[2] * Rotatation[2]));
 
-		// 左手掌
-		lefthand.position = glm::vec3(0, -4.8, 0);
-		modelMt = lefthand.setModelMt(&modelMt);
+		pitch = DOR(alpha);
+		roll = DOR(gamma);
+		//延x軸位移以上手臂為半徑的圓周長:translate(0,r*cos,r*sin) ,角度為上手臂+下手臂
+		Translation[3] = glm::translate(glm::vec3(0, -4.8, 0));
+		lefthand.setModelMt(&(dlefthand.modelMt * Translation[3]));
 
-#pragma endregion
+		//============================================================
+		//頭==========================================================
+		Translation[5] = glm::translate(glm::vec3(0, 3.9, -0.5));
+		head.setModelMt(&(body.modelMt * Translation[5]));
+		//============================================================
+		//右手=========================================================
+		gamma = DOR(-10); angles[6] = -angles[1];
+		alpha = DOR(angles[6]);
+		Rotatation[6] = glm::rotate(alpha, glm::vec3(1, 0, 0)) * glm::rotate(gamma, glm::vec3(0, 0, 1));
+		Translation[6] = glm::translate(glm::vec3(-3.9, 1.7, -0.2));
+		urighthand.setModelMt(&(body.modelMt * Translation[6] * Rotatation[6]));
 
-#pragma region 頭
-		modelMt = stackMat.back();
-		head.position = glm::vec3(0, 3.9, -0.5);
-		modelMt = head.setModelMt(&modelMt);
-#pragma endregion
+		rshouder.setModelMt(&(urighthand.modelMt));
 
-#pragma region 右手
-		modelMt = rshouder.setModelMt(&modelMt);
-		modelMt = urighthand.setModelMt(&modelMt);
-		modelMt = drighthand.setModelMt(&modelMt);
-		modelMt = righthand.setModelMt(&modelMt);
-		
-		modelMt = stackMat.back();
-		stackMat.pop_back();
-		stackMat.push_back(modelMt);
-#pragma endregion
-		
-		modelMt = uleftleg.setModelMt(&modelMt);
-		modelMt = dleftleg.setModelMt(&modelMt);
-		modelMt = leftfoot.setModelMt(&modelMt);
-		
-		modelMt = stackMat.back();
-		stackMat.pop_back();
-		stackMat.push_back(modelMt);
-		
-		modelMt = urightleg.setModelMt(&modelMt);
-		modelMt = drightleg.setModelMt(&modelMt);
-		modelMt = rightfoot.setModelMt(&modelMt);
-		stackMat.pop_back();
-		stackMat.pop_back();
+		angles[7] = angles[2];
+		alpha = DOR(angles[7] - 20);
+		Rotatation[7] = glm::rotate(alpha, glm::vec3(1, 0, 0));
+		Translation[7] = glm::translate(glm::vec3(0, -3, 0));
+		drighthand.setModelMt(&(urighthand.modelMt * Translation[7] * Rotatation[7]));
+
+		pitch = DOR(alpha);
+		roll = DOR(gamma);
+		Translation[8] = glm::translate(glm::vec3(0, -6, 0));
+		righthand.setModelMt(&(drighthand.modelMt * Translation[8]));
+		//=============================================================
+		//back&DBody===================================================
+		Translation[10] = translate(glm::vec3(0, 2, -4.5));
+		back2.setModelMt(&(body.modelMt * Translation[10]));
+
+		Translation[11] = translate(glm::vec3(0, -5.3, 0));
+		dbody.setModelMt(&(body.modelMt * Translation[11]));
+		//=============================================================
+		//左腳
+		alpha = DOR(angles[12]); gamma = DOR(10);
+		Rotatation[12] = glm::rotate(alpha, glm::vec3(1, 0, 0)) * glm::rotate(gamma, glm::vec3(0, 0, 1));
+		Translation[12] = glm::translate(glm::vec3(1.8, -4.5, 0));
+		uleftleg.setModelMt(&(this->modelMt * Translation[12] * Rotatation[12]));
+
+		pitch = (alpha); r = -7;
+		roll = (gamma);
+		alpha = DOR(angles[13] + angles[12]);
+		Translation[13] = glm::translate(glm::vec3(-r * sin(roll), r * cos(pitch), r * sin(pitch))) * Translation[12];
+		Rotatation[13] = glm::rotate(alpha, glm::vec3(1, 0, 0));
+		dleftleg.setModelMt(&(this->modelMt * Translation[13] * Rotatation[13]));
+
+		pitch = (alpha); r = -5;
+		roll = (gamma);
+		Translation[14] = glm::translate(glm::vec3(-(r + 2) * sin(roll), r * cos(pitch), r * sin(pitch) - 1)) * Translation[13];
+		Rotatation[14] = glm::rotate(alpha, glm::vec3(1, 0, 0));
+		leftfoot.setModelMt(&(this->modelMt * Translation[14] * Rotatation[14]));
+		//=============================================================
+		//右腳
+		angles[15] = -angles[12];
+		alpha = DOR(angles[15]);
+		gamma = DOR(-10);
+		Rotatation[15] = glm::rotate(alpha, glm::vec3(1, 0, 0)) * glm::rotate(gamma, glm::vec3(0, 0, 1));
+		Translation[15] = glm::translate(glm::vec3(-1.8, -4.5, 0));
+		urightleg.setModelMt(&(this->modelMt* Translation[15] * Rotatation[15]));
+
+		angles[16] = angles[13];
+		pitch = (alpha); r = -7;
+		roll = (gamma);
+		alpha = DOR(angles[16] + angles[15]);
+		Rotatation[16] = glm::rotate(alpha, glm::vec3(1, 0, 0));
+		Translation[16] = glm::translate(glm::vec3(-r * sin(roll), r * cos(pitch), r * sin(pitch))) * Translation[15];
+		drightleg.setModelMt(&(this->modelMt* Translation[16] * Rotatation[16]));
+
+		pitch = DOR(alpha); r = -5;
+		roll = DOR(gamma);
+		alpha = DOR(angles[15] + angles[16]);
+		Translation[17] = glm::translate(glm::vec3(-(r + 2) * sin(roll), r * cos(pitch), r * sin(pitch) - 0.5)) * Translation[16];
+		Rotatation[17] = glm::rotate(alpha, glm::vec3(1, 0, 0));
+		rightfoot.setModelMt(&(this->modelMt* Translation[17] * Rotatation[17]));
+		//=============================================================
 	}
 
-	void updatePos(int frame) {
-		switch (frame) {
+	void switchMode(int mode) {
+		this->mode = mode;
+		frame = 0;
+	}
+
+	void updateWalkFrame() {
+		frame++;
+		int speed = 8;
+		frame %= 13 * speed;
+		if (frame % speed) return;
+		switch (frame / speed) {
 		case 0:
 			//左手
 			angles[2] = -45;
