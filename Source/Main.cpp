@@ -6,6 +6,8 @@
 glm::mat4x4 modelMt;
 glm::mat4x4 viewMt;
 glm::mat4x4 projectMt;
+float eyeAngley = 0.0;
+float eyedistance = 20.0;
 
 Robot *robot;
 MyShader *robotShader;
@@ -32,8 +34,15 @@ void My_Init() {
 void My_Display()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	modelMt = glm::mat4(1.0f);
 
+	float eyey = DOR(eyeAngley);
+	viewMt = glm::lookAt(
+		glm::vec3(eyedistance * sin(eyey), 2, eyedistance * cos(eyey)),
+		glm::vec3(0, 0, 0), 
+		glm::vec3(0, -1, 0)
+	);
+
+	modelMt = glm::mat4(1.0f);
 
 	robot -> setMt(&modelMt, &viewMt, &projectMt);
 	robot -> draw();
@@ -55,6 +64,25 @@ void My_Timer(int val)
 
 	robot -> update();
 	My_Display();
+}
+
+void keyUpdate(unsigned char key, int x, int y) {
+	switch (key) {
+	case 'w':
+		eyedistance -= 0.2;
+		break;
+	case 's':
+		eyedistance += 0.2;
+		break;
+	case 'a':
+		eyeAngley -= 10;
+		break;
+	case 'd':
+		eyeAngley += 10;
+		break;
+	}
+	robot->keyUpdate(key, x, y);
+	glutPostRedisplay();
 }
 
 
@@ -87,6 +115,8 @@ int main(int argc, char **argv)
 
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	My_Init();
+
+	glutKeyboardFunc(keyUpdate);
 	
 	//註冊GLUT回呼事件
 	////////////////////

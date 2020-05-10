@@ -6,7 +6,7 @@
 #define INSTANCE 0
 #define NORMAL 1
 #define PI 3.14159265358979f
-#define DOR(angle) (angle * PI / 180);
+#define DOR(angle) ((angle) * PI / 180);
 
 bool loadMTL(const char* path,
 	std::vector<glm::vec3>& Kd,
@@ -70,15 +70,14 @@ protected:
 	GLuint vertexs_vbo;
 	GLuint uvs_vbo;
 	GLuint normals_vbo;
+	GLuint kds_vbo;
 	std::vector<glm::vec3>	offsets;
 	std::vector<glm::vec3>	vertexs;
 	std::vector<glm::vec2>	uvs;
 	std::vector<glm::vec3>	normals;
 	std::vector<std::string> mtls;
 	std::vector<unsigned int> faces;
-	std::map<std::string, glm::vec3> KDs;
-	std::map<std::string, glm::vec3> KAs;
-	std::map<std::string, glm::vec3> KSs;
+	std::vector<glm::vec3>	KDs;
 	int type;
 
 public:
@@ -94,7 +93,7 @@ public:
 
 protected:
 
-	void loadMyObj(char* inputfile) {
+	void loadMyObj(char* objFIle, char* mtlFile) {
 
 		tinyobj::attrib_t attrib;
 		std::vector<tinyobj::shape_t> shapes;
@@ -102,7 +101,7 @@ protected:
 		std::string warn;
 		std::string err;
 
-		bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, inputfile, "../Assets/Robot/gundam.mtl");
+		bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, objFIle, mtlFile);
 
 		if (!warn.empty()) {
 			std::cout << warn << std::endl;
@@ -122,13 +121,13 @@ protected:
 			size_t index_offset = 0;
 			for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) {
 				int fv = shapes[s].mesh.num_face_vertices[f];
-
 				// Loop over vertices in the face.
 				for (size_t v = 0; v < fv; v++) {
 					// access to vertex
 					glm::vec3 vertex;
 					glm::vec2 uv;
 					glm::vec3 normal;
+					glm::vec3 kd;
 					tinyobj::index_t idx = shapes[s].mesh.indices[index_offset + v];
 					vertex.x = attrib.vertices[3 * idx.vertex_index + 0];
 					vertex.y = attrib.vertices[3 * idx.vertex_index + 1];
@@ -138,40 +137,16 @@ protected:
 					normal.z = attrib.normals[3 * idx.normal_index + 2];
 					uv.x = attrib.texcoords[2 * idx.texcoord_index + 0];
 					uv.y = attrib.texcoords[2 * idx.texcoord_index + 1];
-					// Optional: vertex colors
-					// tinyobj::real_t red = attrib.colors[3*idx.vertex_index+0];
-					// tinyobj::real_t green = attrib.colors[3*idx.vertex_index+1];
-					// tinyobj::real_t blue = attrib.colors[3*idx.vertex_index+2];
-					//std::cout << vertex.x << " " << vertex.y << " " << vertex.z << std::endl;
+					kd.x = materials[shapes[s].mesh.material_ids[f]].diffuse[0];
+					kd.y = materials[shapes[s].mesh.material_ids[f]].diffuse[1];
+					kd.z = materials[shapes[s].mesh.material_ids[f]].diffuse[2];
 					vertexs.push_back(vertex);
 					uvs.push_back(uv);
 					normals.push_back(normal);
+					KDs.push_back(kd);
 				}
 				index_offset += fv;
-
-				// per-face material
-				shapes[s].mesh.material_ids[f];
 			}
-		}
-		for (int i= 0 ; i < materials.size(); i++) {
-			unsigned int face = materials[i].face;
-			std::string mtl = materials[i].name;
-			faces.push_back(face);
-			mtls.push_back(mtl);
-		}
-	}
-	void loadMyMtl(char* inputfile, int index = 0) {
-		std::vector<glm::vec3> Kds;
-		std::vector<glm::vec3> Kas;
-		std::vector<glm::vec3> Kss;
-		std::vector<std::string> Materials;//mtl-name
-		std::string texture;
-		loadMTL(inputfile, Kds, Kas, Kss, Materials, texture);
-		//printf("%d\n",texture);
-		for (int i = 0; i < Materials.size(); i++) {
-			std::string mtlname = Materials[i];
-			//  name            vec3
-			KDs[mtlname] = Kds[i];
 		}
 	}
 
@@ -193,7 +168,7 @@ public:
 	}
 	void init(char* objFile, char* mtlFIle = nullptr, int index = 0) {
 		glBindVertexArray(vao);
-		loadMyObj(objFile);
+		loadMyObj(objFile, mtlFIle);
 
 		glGenBuffers(1, &vertexs_vbo);
 		glBindBuffer(GL_ARRAY_BUFFER, vertexs_vbo);
@@ -222,9 +197,11 @@ public:
 			glBufferData(GL_ARRAY_BUFFER, offsets.size() * sizeof(float) * 3, &offsets[0], GL_STATIC_DRAW);
 		}
 
-		if (mtlFIle) {
-			loadMyMtl(mtlFIle, index);
-		}
+		glGenBuffers(1, &kds_vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, kds_vbo);
+		glBufferData(GL_ARRAY_BUFFER, KDs.size() * sizeof(float) * 3, &KDs[0], GL_STATIC_DRAW);
+		glEnableVertexAttribArray(4);
+		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 		glBindVertexArray(NULL);
 	}
 
@@ -257,18 +234,7 @@ public:
 		shader->setModelMt(&(glm::rotate(modelMt, 0.0f, glm::vec3(0, 0, 1))));
 		
 		if (offsets.size()) {
-			// glDrawArraysInstanced(GL_TRIANGLES, 0, size(), offsets.size());
-
-			int vertexIDoffset = 0;//glVertexID's offset 
-			std::string mtlname;
-			glm::vec3 Ks = glm::vec3(1, 1, 1);
-			for (int j = 0; j < mtls.size(); j++) {//
-				mtlname = mtls[j];
-			
-				shader->setMaterial(KDs[mtlname], Ks);
-				glDrawArraysInstanced(GL_TRIANGLES, vertexIDoffset, faces[j] * 3, offsets.size());
-				vertexIDoffset += faces[j] * 3;
-			}
+			glDrawArraysInstanced(GL_TRIANGLES, 0, size(), offsets.size());
 		}
 	}
 

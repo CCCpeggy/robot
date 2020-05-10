@@ -145,6 +145,11 @@ public:
 		float r, pitch, yaw, roll;
 		float alpha, beta, gamma;
 
+		angles[6] = -angles[1];
+		angles[7] = angles[2];
+		angles[15] = -angles[12];
+		angles[16] = angles[13];
+
 		//Body
 		beta = DOR(angle);
 		Rotatation[0] = glm::rotate(beta, glm::vec3(0, 1, 0));
@@ -183,7 +188,7 @@ public:
 		head.setModelMt(&(body.modelMt * Translation[5]));
 		//============================================================
 		//¥k¤â=========================================================
-		gamma = DOR(-10); angles[6] = -angles[1];
+		gamma = DOR(-10); 
 		alpha = DOR(angles[6]);
 		Rotatation[6] = glm::rotate(alpha, glm::vec3(1, 0, 0)) * glm::rotate(gamma, glm::vec3(0, 0, 1));
 		Translation[6] = glm::translate(glm::vec3(-3.9, 1.7, -0.2));
@@ -191,14 +196,13 @@ public:
 
 		rshouder.setModelMt(&(urighthand.modelMt));
 
-		angles[7] = angles[2];
 		alpha = DOR(angles[7] - 20);
 		Rotatation[7] = glm::rotate(alpha, glm::vec3(1, 0, 0));
 		Translation[7] = glm::translate(glm::vec3(0, -3, 0));
 		drighthand.setModelMt(&(urighthand.modelMt * Translation[7] * Rotatation[7]));
 
-		pitch = DOR(alpha);
-		roll = DOR(gamma);
+		pitch = (alpha);
+		roll = (gamma);
 		Translation[8] = glm::translate(glm::vec3(0, -6, 0));
 		righthand.setModelMt(&(drighthand.modelMt * Translation[8]));
 		//=============================================================
@@ -229,14 +233,12 @@ public:
 		leftfoot.setModelMt(&(this->modelMt * Translation[14] * Rotatation[14]));
 		//=============================================================
 		//¥k¸}
-		angles[15] = -angles[12];
 		alpha = DOR(angles[15]);
 		gamma = DOR(-10);
 		Rotatation[15] = glm::rotate(alpha, glm::vec3(1, 0, 0)) * glm::rotate(gamma, glm::vec3(0, 0, 1));
 		Translation[15] = glm::translate(glm::vec3(-1.8, -4.5, 0));
 		urightleg.setModelMt(&(this->modelMt* Translation[15] * Rotatation[15]));
 
-		angles[16] = angles[13];
 		pitch = (alpha); r = -7;
 		roll = (gamma);
 		alpha = DOR(angles[16] + angles[15]);
@@ -244,13 +246,41 @@ public:
 		Translation[16] = glm::translate(glm::vec3(-r * sin(roll), r * cos(pitch), r * sin(pitch))) * Translation[15];
 		drightleg.setModelMt(&(this->modelMt* Translation[16] * Rotatation[16]));
 
-		pitch = DOR(alpha); r = -5;
-		roll = DOR(gamma);
-		alpha = DOR(angles[15] + angles[16]);
+		pitch = (alpha); r = -5;
+		roll = (gamma);
 		Translation[17] = glm::translate(glm::vec3(-(r + 2) * sin(roll), r * cos(pitch), r * sin(pitch) - 0.5)) * Translation[16];
 		Rotatation[17] = glm::rotate(alpha, glm::vec3(1, 0, 0));
 		rightfoot.setModelMt(&(this->modelMt* Translation[17] * Rotatation[17]));
 		//=============================================================
+	}
+
+	void keyUpdate(unsigned char key, int x, int y) {
+		switch (key) {
+		case '1':
+			angle += 5;
+			if (angle >= 360) angle = 0;
+			printf("beta:%f\n", angle);
+			break;
+		case '2':
+			angle -= 5;
+			if (angle <= 0) angle = 360;
+			printf("beta:%f\n", angle);
+			break;
+		
+		case 'r':
+			angles[1] -= 5;
+			if (angles[1] == -360) angles[1] = 0;
+			break;
+		case 't':
+			angles[2] -= 5;
+			if (angles[2] == -360) angles[2] = 0;
+			break;
+		case 'q':
+			break;
+		case 'e':
+			break;
+		}
+		glutPostRedisplay();
 	}
 
 	void switchMode(int mode) {
