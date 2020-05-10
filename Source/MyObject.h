@@ -178,6 +178,10 @@ public:
 	int size() {
 		return vertexs.size();
 	}
+
+	void addOffset(glm::vec3 offset) {
+		offsets.push_back(offset);
+	}
 };
 
 const int MyObject::DRAW_TYPE_INSTANCE = 0;

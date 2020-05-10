@@ -42,85 +42,107 @@ private:
 
 public:
 	Robot(MyShader* shader = nullptr):
-		body(shader),
-		ulefthand(shader),
-		dlefthand(shader),
-		lefthand(shader),
-		lshouder(shader),
-		head(shader),
-		urighthand(shader),
-		drighthand(shader),
-		righthand(shader),
-		rshouder(shader),
-		dbody(shader),
-		back2(shader),
-		uleftleg(shader),
-		dleftleg(shader),
-		leftfoot(shader),
-		urightleg(shader),
-		drightleg(shader),
-		rightfoot(shader),
+		body(shader, MyObject::DRAW_TYPE_INSTANCE),
+		ulefthand(shader, MyObject::DRAW_TYPE_INSTANCE),
+		dlefthand(shader, MyObject::DRAW_TYPE_INSTANCE),
+		lefthand(shader, MyObject::DRAW_TYPE_INSTANCE),
+		lshouder(shader, MyObject::DRAW_TYPE_INSTANCE),
+		head(shader, MyObject::DRAW_TYPE_INSTANCE),
+		urighthand(shader, MyObject::DRAW_TYPE_INSTANCE),
+		drighthand(shader, MyObject::DRAW_TYPE_INSTANCE),
+		righthand(shader, MyObject::DRAW_TYPE_INSTANCE),
+		rshouder(shader, MyObject::DRAW_TYPE_INSTANCE),
+		dbody(shader, MyObject::DRAW_TYPE_INSTANCE),
+		back2(shader, MyObject::DRAW_TYPE_INSTANCE),
+		uleftleg(shader, MyObject::DRAW_TYPE_INSTANCE),
+		dleftleg(shader, MyObject::DRAW_TYPE_INSTANCE),
+		leftfoot(shader, MyObject::DRAW_TYPE_INSTANCE),
+		urightleg(shader, MyObject::DRAW_TYPE_INSTANCE),
+		drightleg(shader, MyObject::DRAW_TYPE_INSTANCE),
+		rightfoot(shader, MyObject::DRAW_TYPE_INSTANCE),
 		frame(0),
 		mode(MODE_IDLE),
 		angle(0),
 		position(0),
 		angles{0}
 	{
+		initRobotPart();
+		addRobots();
+	}
+
+	void initRobotPart() {
 		allObjs.push_back(&body);
 		body.init("../Assets/Robot/body.obj", "../Assets/Robot/gundam.mtl", 0);
 
 		allObjs.push_back(&ulefthand);
 		ulefthand.init("../Assets/Robot/ulefthand.obj", "../Assets/Robot/gundam.mtl", 1);
-		 
+
 		allObjs.push_back(&dlefthand);
 		dlefthand.init("../Assets/Robot/dlefthand.obj", "../Assets/Robot/gundam.mtl", 2);
-		
+
 		allObjs.push_back(&lefthand);
 		lefthand.init("../Assets/Robot/lefthand.obj", "../Assets/Robot/gundam.mtl", 3);
-		
+
 		allObjs.push_back(&lshouder);
 		lshouder.init("../Assets/Robot/lshouder.obj", "../Assets/Robot/gundam.mtl", 4);
-		
+
 		allObjs.push_back(&head);
 		head.init("../Assets/Robot/head.obj", "../Assets/Robot/gundam.mtl", 5);
-		
+
 		allObjs.push_back(&urighthand);
 		urighthand.init("../Assets/Robot/urighthand.obj", "../Assets/Robot/gundam.mtl", 6);
-		
+
 		allObjs.push_back(&drighthand);
 		drighthand.init("../Assets/Robot/drighthand.obj", "../Assets/Robot/gundam.mtl", 7);
-		
+
 		allObjs.push_back(&righthand);
 		righthand.init("../Assets/Robot/righthand.obj", "../Assets/Robot/gundam.mtl", 8);
-		
+
 		allObjs.push_back(&rshouder);
 		rshouder.init("../Assets/Robot/rshouder.obj", "../Assets/Robot/gundam.mtl", 9);
-		
+
 		allObjs.push_back(&back2);
 		back2.init("../Assets/Robot/back2.obj", "../Assets/Robot/gundam.mtl", 10);
-		
+
 		allObjs.push_back(&dbody);
 		dbody.init("../Assets/Robot/dbody.obj", "../Assets/Robot/gundam.mtl", 11);
-		
+
 		allObjs.push_back(&uleftleg);
 		uleftleg.init("../Assets/Robot/uleftleg.obj", "../Assets/Robot/gundam.mtl", 12);
-		
-		 allObjs.push_back(&dleftleg);
-		 dleftleg.init("../Assets/Robot/dleftleg.obj", "../Assets/Robot/gundam.mtl", 13);
-		 
-		 allObjs.push_back(&leftfoot);
-		 leftfoot.init("../Assets/Robot/leftfoot.obj", "../Assets/Robot/gundam.mtl", 14);
-		 
-		 allObjs.push_back(&urightleg);
-		 urightleg.init("../Assets/Robot/urightleg.obj", "../Assets/Robot/gundam.mtl", 15);
-		 
-		 allObjs.push_back(&drightleg);
-		 drightleg.init("../Assets/Robot/drightleg.obj", "../Assets/Robot/gundam.mtl", 16);
-		 
-		 allObjs.push_back(&rightfoot);
-		 rightfoot.init("../Assets/Robot/rightfoot.obj", "../Assets/Robot/gundam.mtl", 17);
+
+		allObjs.push_back(&dleftleg);
+		dleftleg.init("../Assets/Robot/dleftleg.obj", "../Assets/Robot/gundam.mtl", 13);
+
+		allObjs.push_back(&leftfoot);
+		leftfoot.init("../Assets/Robot/leftfoot.obj", "../Assets/Robot/gundam.mtl", 14);
+
+		allObjs.push_back(&urightleg);
+		urightleg.init("../Assets/Robot/urightleg.obj", "../Assets/Robot/gundam.mtl", 15);
+
+		allObjs.push_back(&drightleg);
+		drightleg.init("../Assets/Robot/drightleg.obj", "../Assets/Robot/gundam.mtl", 16);
+
+		allObjs.push_back(&rightfoot);
+		rightfoot.init("../Assets/Robot/rightfoot.obj", "../Assets/Robot/gundam.mtl", 17);
 	}
 	
+	void addRobots() {
+		glm::vec3 offsets[] = {
+			glm::vec3(45.0f, 0.0f, -60.0f),
+			glm::vec3(0.0f, 0.0f, -60.0f),
+			glm::vec3(-45.0f, 0.0f, -60.0f),
+			glm::vec3(-15.0f, 0.0f, -30.0f),
+			glm::vec3(15.0f, 0.0f, -30.0f),
+			glm::vec3(0.0f, 0.0f, 0.0f),
+			// glm::vec3(0.0f, -15.0f, 30.0f),
+		};
+		for (auto offset : offsets) {
+			for (auto obj : allObjs) {
+				obj -> addOffset(offset);
+			}
+		}
+	}
+
 	void setMt(glm::mat4x4* modelMt, glm::mat4x4* viewMt = nullptr, glm::mat4x4* projectMt = nullptr) {
 		for (std::vector<MyObject*>::iterator iter = allObjs.begin();
 			iter != allObjs.end();
@@ -303,7 +325,7 @@ public:
 
 	void updateWalkFrame() {
 		frame++;
-		int speed = 8;
+		int speed = 6;
 		frame %= 13 * speed;
 		if (frame % speed) return;
 		switch (frame / speed) {

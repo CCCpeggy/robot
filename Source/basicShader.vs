@@ -7,7 +7,7 @@
 layout(location = 0) in vec3 vPosition;
 layout(location = 1) in vec2 vertexUV;
 layout(location = 2) in vec3 vertexNormal;
-layout(location = 3) in vec3 vOffect;
+layout(location = 3) in vec3 vOffset;
 layout(location = 4) in vec3 vKd;
 
 vec3 vLightPosition = vec3(0, 10, 50);
@@ -24,8 +24,15 @@ out vec3 Kd;
 
 void main(void) 
 { 
-
-	mat4 MVP = Projection*View*Model;
+    mat4 offsetMatrix;
+    offsetMatrix[0][0] = 1;
+    offsetMatrix[1][1] = 1;
+    offsetMatrix[2][2] = 1;
+    offsetMatrix[3][3] = 1;
+    offsetMatrix[3][0] = vOffset.x;
+    offsetMatrix[3][1] = vOffset.y;
+    offsetMatrix[3][2] = vOffset.z;
+	mat4 MVP = Projection*View*offsetMatrix * Model;
 	mat4 MV = View*Model;
 	
     // Get surface normal in eye coordinates
@@ -33,7 +40,7 @@ void main(void)
     vVaryingNormal = normalMatrix * vertexNormal;
 
     // Get vertex position in eye coordinates
-    vec4 vPosition4 = MV * vec4(vPosition+ vOffect, 1);
+    vec4 vPosition4 = MV * vec4(vPosition, 1);
     vec3 vPosition3 = vPosition4.xyz / vPosition4.w;
 
     // Get vector to light source
@@ -41,7 +48,7 @@ void main(void)
 
 	UV = vertexUV;
     // Don't forget to transform the geometry!
-    gl_Position = MVP * vec4(vPosition + vOffect, 1);
+    gl_Position = MVP * vec4(vPosition, 1);
 
     Kd = vKd;
 }
