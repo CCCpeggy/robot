@@ -74,56 +74,56 @@ public:
 		allObjs.push_back(&body);
 		body.init("../Assets/Robot/body.obj", "../Assets/Robot/gundam.mtl", 0);
 
-		allObjs.push_back(&ulefthand);
-		ulefthand.init("../Assets/Robot/ulefthand.obj", "../Assets/Robot/gundam.mtl", 1);
-
-		allObjs.push_back(&dlefthand);
-		dlefthand.init("../Assets/Robot/dlefthand.obj", "../Assets/Robot/gundam.mtl", 2);
-
-		allObjs.push_back(&lefthand);
-		lefthand.init("../Assets/Robot/lefthand.obj", "../Assets/Robot/gundam.mtl", 3);
-
-		allObjs.push_back(&lshouder);
-		lshouder.init("../Assets/Robot/lshouder.obj", "../Assets/Robot/gundam.mtl", 4);
-
-		allObjs.push_back(&head);
-		head.init("../Assets/Robot/head.obj", "../Assets/Robot/gundam.mtl", 5);
-
-		allObjs.push_back(&urighthand);
-		urighthand.init("../Assets/Robot/urighthand.obj", "../Assets/Robot/gundam.mtl", 6);
-
-		allObjs.push_back(&drighthand);
-		drighthand.init("../Assets/Robot/drighthand.obj", "../Assets/Robot/gundam.mtl", 7);
-
-		allObjs.push_back(&righthand);
-		righthand.init("../Assets/Robot/righthand.obj", "../Assets/Robot/gundam.mtl", 8);
-
-		allObjs.push_back(&rshouder);
-		rshouder.init("../Assets/Robot/rshouder.obj", "../Assets/Robot/gundam.mtl", 9);
-
-		allObjs.push_back(&back2);
-		back2.init("../Assets/Robot/back2.obj", "../Assets/Robot/gundam.mtl", 10);
-
-		allObjs.push_back(&dbody);
-		dbody.init("../Assets/Robot/dbody.obj", "../Assets/Robot/gundam.mtl", 11);
-
-		allObjs.push_back(&uleftleg);
-		uleftleg.init("../Assets/Robot/uleftleg.obj", "../Assets/Robot/gundam.mtl", 12);
-
-		allObjs.push_back(&dleftleg);
-		dleftleg.init("../Assets/Robot/dleftleg.obj", "../Assets/Robot/gundam.mtl", 13);
-
-		allObjs.push_back(&leftfoot);
-		leftfoot.init("../Assets/Robot/leftfoot.obj", "../Assets/Robot/gundam.mtl", 14);
-
-		allObjs.push_back(&urightleg);
-		urightleg.init("../Assets/Robot/urightleg.obj", "../Assets/Robot/gundam.mtl", 15);
-
-		allObjs.push_back(&drightleg);
-		drightleg.init("../Assets/Robot/drightleg.obj", "../Assets/Robot/gundam.mtl", 16);
-
-		allObjs.push_back(&rightfoot);
-		rightfoot.init("../Assets/Robot/rightfoot.obj", "../Assets/Robot/gundam.mtl", 17);
+		// allObjs.push_back(&ulefthand);
+		// ulefthand.init("../Assets/Robot/ulefthand.obj", "../Assets/Robot/gundam.mtl", 1);
+		// 
+		// allObjs.push_back(&dlefthand);
+		// dlefthand.init("../Assets/Robot/dlefthand.obj", "../Assets/Robot/gundam.mtl", 2);
+		// 
+		// allObjs.push_back(&lefthand);
+		// lefthand.init("../Assets/Robot/lefthand.obj", "../Assets/Robot/gundam.mtl", 3);
+		// 
+		// allObjs.push_back(&lshouder);
+		// lshouder.init("../Assets/Robot/lshouder.obj", "../Assets/Robot/gundam.mtl", 4);
+		// 
+		// allObjs.push_back(&head);
+		// head.init("../Assets/Robot/head.obj", "../Assets/Robot/gundam.mtl", 5);
+		// 
+		// allObjs.push_back(&urighthand);
+		// urighthand.init("../Assets/Robot/urighthand.obj", "../Assets/Robot/gundam.mtl", 6);
+		// 
+		// allObjs.push_back(&drighthand);
+		// drighthand.init("../Assets/Robot/drighthand.obj", "../Assets/Robot/gundam.mtl", 7);
+		// 
+		// allObjs.push_back(&righthand);
+		// righthand.init("../Assets/Robot/righthand.obj", "../Assets/Robot/gundam.mtl", 8);
+		// 
+		// allObjs.push_back(&rshouder);
+		// rshouder.init("../Assets/Robot/rshouder.obj", "../Assets/Robot/gundam.mtl", 9);
+		// 
+		// allObjs.push_back(&back2);
+		// back2.init("../Assets/Robot/back2.obj", "../Assets/Robot/gundam.mtl", 10);
+		// 
+		// allObjs.push_back(&dbody);
+		// dbody.init("../Assets/Robot/dbody.obj", "../Assets/Robot/gundam.mtl", 11);
+		// 
+		// allObjs.push_back(&uleftleg);
+		// uleftleg.init("../Assets/Robot/uleftleg.obj", "../Assets/Robot/gundam.mtl", 12);
+		// 
+		// allObjs.push_back(&dleftleg);
+		// dleftleg.init("../Assets/Robot/dleftleg.obj", "../Assets/Robot/gundam.mtl", 13);
+		// 
+		// allObjs.push_back(&leftfoot);
+		// leftfoot.init("../Assets/Robot/leftfoot.obj", "../Assets/Robot/gundam.mtl", 14);
+		// 
+		// allObjs.push_back(&urightleg);
+		// urightleg.init("../Assets/Robot/urightleg.obj", "../Assets/Robot/gundam.mtl", 15);
+		// 
+		// allObjs.push_back(&drightleg);
+		// drightleg.init("../Assets/Robot/drightleg.obj", "../Assets/Robot/gundam.mtl", 16);
+		// 
+		// allObjs.push_back(&rightfoot);
+		// rightfoot.init("../Assets/Robot/rightfoot.obj", "../Assets/Robot/gundam.mtl", 17);
 	}
 	
 	void addRobots() {
@@ -133,8 +133,7 @@ public:
 			glm::vec3(-45.0f, 0.0f, -60.0f),
 			glm::vec3(-15.0f, 0.0f, -30.0f),
 			glm::vec3(15.0f, 0.0f, -30.0f),
-			glm::vec3(0.0f, 0.0f, 0.0f),
-			// glm::vec3(0.0f, -15.0f, 30.0f),
+			glm::vec3(0.0f, 0.0f, 0.0f)
 		};
 		for (auto offset : offsets) {
 			for (auto obj : allObjs) {

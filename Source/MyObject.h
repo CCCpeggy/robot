@@ -14,6 +14,7 @@ protected:
 	GLuint uvs_vbo;
 	GLuint normals_vbo;
 	GLuint kds_vbo;
+	GLuint ebo;
 	std::vector<glm::vec3>	offsets;
 	std::vector<glm::vec3>	vertexs;
 	std::vector<glm::vec2>	uvs;
@@ -21,16 +22,18 @@ protected:
 	std::vector<std::string> mtls;
 	std::vector<unsigned int> faces;
 	std::vector<glm::vec3>	KDs;
+	int indicesSize;
 	int drawType;
 
 public:
 	static const int DRAW_TYPE_INSTANCE;
 	static const int DRAW_TYPE_NORMAL;
+	static const int DRAW_TYPE_ELEMENT;
 	MyShader* shader;
 
 	glm::mat4x4 modelMt;
 
-protected:
+private:
 
 	void loadMyObj(char* objFIle, char* mtlFile) {
 
@@ -94,16 +97,15 @@ public:
 		shader(shader),
 		drawType(type)
 	{
-		if (type == DRAW_TYPE_NORMAL) {
-			offsets.push_back(glm::vec3(0, 0, 0));
-		}
 		glGenVertexArrays(1, &vao);
 		glBindVertexArray(vao);
 	}
 	void init(char* objFile, char* mtlFIle = nullptr, int index = 0) {
 		glBindVertexArray(vao);
 		loadMyObj(objFile, mtlFIle);
-
+		if (drawType != DRAW_TYPE_NORMAL) {
+			offsets.push_back(glm::vec3(0, 0, 0));
+		}
 		glGenBuffers(1, &vertexs_vbo);
 		glBindBuffer(GL_ARRAY_BUFFER, vertexs_vbo);
 		glBufferData(GL_ARRAY_BUFFER, vertexs.size() * sizeof(float) * 3, &vertexs[0], GL_STATIC_DRAW);
@@ -139,14 +141,28 @@ public:
 		glBindVertexArray(NULL);
 	}
 
+	void init(float* vertices, int* indices, int verticesSize, int indicesSize) {
+		glBindVertexArray(vao);
+
+		glGenBuffers(1, &vertexs_vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, vertexs_vbo);
+		glBufferData(GL_ARRAY_BUFFER, verticesSize, vertices, GL_STATIC_DRAW);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+		glEnableVertexAttribArray(0);
+
+		glGenBuffers(1, &ebo);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesSize, indices, GL_STATIC_DRAW);
+
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindVertexArray(0);
+
+		this->indicesSize = indicesSize;
+	}
+
 	void use() {
 		shader->use();
 		glBindVertexArray(vao);
-
-		if (drawType == DRAW_TYPE_INSTANCE && offsets.size()) {
-			glBindBuffer(GL_ARRAY_BUFFER, offsets_vbo);
-			glBufferData(GL_ARRAY_BUFFER, offsets.size() * sizeof(float) * 3, &offsets[0], GL_DYNAMIC_DRAW);
-		}
 	}
 
 	void setMt(glm::mat4x4* modelMt, glm::mat4x4* viewMt = nullptr, glm::mat4x4* projectMt = nullptr) {
@@ -165,13 +181,16 @@ public:
 	}
 
 	void draw() {
-		shader->setModelMt(&(glm::rotate(modelMt, 0.0f, glm::vec3(0, 0, 1))));
+		shader->setModelMt(&(modelMt));
 		
 		if (drawType == DRAW_TYPE_NORMAL) {
 			glDrawArrays(GL_TRIANGLES, 0, size());
 		}
 		else if (drawType == DRAW_TYPE_INSTANCE && offsets.size()) {
 			glDrawArraysInstanced(GL_TRIANGLES, 0, size(), offsets.size());
+		}
+		else if (drawType == DRAW_TYPE_ELEMENT) {
+			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 		}
 	}
 
@@ -181,9 +200,16 @@ public:
 
 	void addOffset(glm::vec3 offset) {
 		offsets.push_back(offset);
+
+		if (drawType == DRAW_TYPE_INSTANCE && offsets.size()) {
+			glBindVertexArray(vao);
+			glBindBuffer(GL_ARRAY_BUFFER, offsets_vbo);
+			glBufferData(GL_ARRAY_BUFFER, offsets.size() * sizeof(float) * 3, &offsets[0], GL_DYNAMIC_DRAW);
+		}
 	}
 };
 
 const int MyObject::DRAW_TYPE_INSTANCE = 0;
 const int MyObject::DRAW_TYPE_NORMAL = 1;
+const int MyObject::DRAW_TYPE_ELEMENT = 2;
 #endif

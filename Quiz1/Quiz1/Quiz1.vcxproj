@@ -14,14 +14,17 @@
     <ClCompile Include="..\..\Source\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\Source\basicShader.fs" />
-    <None Include="..\..\Source\basicShader.vs" />
+    <None Include="..\..\Source\BasicShader.fs" />
+    <None Include="..\..\Source\BasicShader.vs" />
+    <None Include="..\..\Source\SkyboxShader.fs" />
+    <None Include="..\..\Source\SkyboxShader.vs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\Menu.h" />
     <ClInclude Include="..\..\Source\MyObject.h" />
     <ClInclude Include="..\..\Source\Robot.h" />
     <ClInclude Include="..\..\Source\MyShader.h" />
+    <ClInclude Include="..\..\Source\Skybox.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{610A51F2-C653-47BB-91C5-17EDAB56EF54}</ProjectGuid>

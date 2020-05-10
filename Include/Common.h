@@ -147,3 +147,4 @@ void FreeShaderSource(char** srcp)
 	delete srcp[0];
 	delete srcp;
 }
+

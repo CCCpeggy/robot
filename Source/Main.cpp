@@ -2,6 +2,7 @@
 #include "../Source/Robot.h"
 #include "../Source/MyShader.h"
 #include "../Source/Menu.h"
+#include "../Source/Skybox.h"
 #include <conio.h>
 
 glm::mat4x4 modelMt;
@@ -11,14 +12,14 @@ float eyeAngley = 0.0;
 float eyedistance = 20.0;
 
 extern Robot *robot;
-MyShader *robotShader;
+MyShader* robotShader;
 
 // 渲染事件, 用來在場景上繪製東西
 
 void My_Init() {
-	robotShader = new MyShader("../Source/basicShader.vs", "../Source/basicShader.fs");
+	robotShader = new MyShader("../Source/BasicShader.vs", "../Source/BasicShader.fs");
 
-	projectMt = glm::perspective(80.0f, 4.0f / 3.0f, 0.1f, 100.0f);
+	projectMt = glm::perspective(80.0f, 4.0f / 3.0f, 0.1f, 1000.0f);
 	//glm::mat4 Projection = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.0f,100.0f); // In world coordinates
 
 	// Camera matrix
@@ -28,6 +29,7 @@ void My_Init() {
 		glm::vec3(0, -1, 0)  // Head is up (set to 0,1,0 to look upside-down)
 	);
 
+	Skybox::init();
 	robot = new Robot(robotShader);
 }
 
@@ -48,19 +50,17 @@ void My_Display()
 	robot -> setMt(&modelMt, &viewMt, &projectMt);
 	robot -> draw();
 
+	Skybox::use();
+	Skybox::setViewProjectMt(&viewMt, &projectMt);
+	Skybox::draw();
+
 	glFlush();//強制執行上次的OpenGL commands
 	glutSwapBuffers();
 }
 
 void ReshapeWindow(int w, int h) {
 	if (h == 0) h = 1;
-	projectMt = glm::perspective(80.0f, 4.0f / 3.0f, 0.1f, 100.0f);
-}
-
-void Mouse(int button, int state, int x, int y) {
-	if (button == 2) {
-
-	}
+	projectMt = glm::perspective(80.0f, 4.0f / 3.0f, 0.1f, 1000.0f);
 }
 
 //計時器事件, 經指定時間後該函式被呼叫
@@ -129,7 +129,7 @@ int main(int argc, char **argv)
 	//註冊GLUT回呼事件
 	////////////////////
 	glutDisplayFunc(My_Display);
-	glutTimerFunc(60, My_Timer, 0);
+	glutTimerFunc(16, My_Timer, 0);
 	glutKeyboardFunc(keyUpdate);
 	glutReshapeFunc(ReshapeWindow);
 
