@@ -312,6 +312,7 @@ public:
 			this->mode = mode;
 			frame = 0;
 		}
+
 	}
 
 	void updateIdleFrame() {
@@ -325,7 +326,9 @@ public:
 	void updateWalkFrame() {
 		frame++;
 		int speed = 6;
-		frame %= 13 * speed;
+		if (frame >= 13 * speed) {
+			frame  = speed;
+		}
 		if (frame % speed) return;
 		switch (frame / speed) {
 		case 0:
@@ -342,6 +345,7 @@ public:
 		case 3:
 			angles[1] += 10;
 			angles[12] -= 15;
+			angles[13] = 0;
 			position += 0.1;
 			break;
 		case 4:
@@ -378,6 +382,15 @@ public:
 			) {
 			(*iter)->use();
 			(*iter)->draw();
+		}
+	}
+
+	void setDrawType(int drawType) {
+		for (std::vector<MyObject*>::iterator iter = allObjs.begin();
+			iter != allObjs.end();
+			iter++
+			) {
+			(*iter)->setDrawType(drawType);
 		}
 	}
 };

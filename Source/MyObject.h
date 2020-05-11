@@ -211,11 +211,15 @@ public:
 	void addOffset(glm::vec3 offset) {
 		offsets.push_back(offset);
 
-		if (drawType == DRAW_TYPE_INSTANCE && offsets.size()) {
+		if (drawType == DRAW_TYPE_INSTANCE) {
 			glBindVertexArray(vao);
 			glBindBuffer(GL_ARRAY_BUFFER, offsets_vbo);
-			glBufferData(GL_ARRAY_BUFFER, offsets.size() * sizeof(float) * 3, &offsets[0], GL_DYNAMIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, offsets.size() * sizeof(float) * 3, &offsets[0], GL_STATIC_DRAW);
 		}
+	}
+
+	void setDrawType(int drawType) {
+		this->drawType = drawType;
 	}
 };
 
