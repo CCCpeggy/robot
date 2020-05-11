@@ -1,6 +1,6 @@
-#version 410 core
+#version 430 core
 
-layout(location = 0) out vec4 fragColor;
+out vec4 vFragColor;
 
 in VertexData
 {
@@ -11,5 +11,6 @@ uniform samplerCube tex;
 
 void main()
 {
-	fragColor = texture(tex, vertexData.texcoord);
+	vFragColor = texture(tex, vertexData.texcoord);
+	vFragColor.w = 1;
 }

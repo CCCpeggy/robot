@@ -87,18 +87,23 @@ namespace Skybox {
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
+		// CheckGLError();
 	}
 
 	void init() {
 		skyboxShader = new MyShader("../Source/SkyboxShader.vs", "../Source/SkyboxShader.fs");
 		skybox = new MyObject(skyboxShader, MyObject::DRAW_TYPE_ELEMENT);
 
-		skybox -> init(vertices, indices, sizeof(vertices), sizeof(indices));
+		skybox -> init(vertices, indices, sizeof(vertices) / sizeof(float), sizeof(indices)/sizeof(int));
+
+		glEnable(GL_TEXTURE_2D);
 		loadTextures();
 	}
 
 	void use()
 	{
+		glEnable(GL_TEXTURE_2D);
 		skybox->use();
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);

@@ -1,9 +1,9 @@
-#version 410 core
+#version 430 core
 
 layout(location = 0) in vec3 vertex;
 
-uniform mat4 um4mv;
-uniform mat4 um4p;
+uniform mat4 View;
+uniform mat4 Projection;
 
 out VertexData
 {
@@ -12,7 +12,7 @@ out VertexData
 
 void main()
 {
-	vec4 position = um4p * um4mv * vec4(vertex, 1.0);
+	vec4 position = Projection * View * (vec4(vertex * 1000, 1.0));
 	gl_Position = position.xyww;
 
 	vertexData.texcoord = vec3(vertex.x, -vertex.y, -vertex.z);

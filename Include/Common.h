@@ -60,6 +60,19 @@ void ShaderLog(GLuint shader)
 	}
 }
 
+bool CheckGLError()
+{
+	GLenum errCode = glGetError();
+	if (errCode != GL_NO_ERROR)
+	{
+		const GLubyte* errString = gluErrorString(errCode);
+		printf("%s\n", errString);
+
+		return false;
+	}
+	return true;
+}
+
 void PrintGLError()
 {
     GLenum code = glGetError();

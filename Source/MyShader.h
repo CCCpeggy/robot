@@ -35,9 +35,9 @@ public:
 		glLinkProgram(program);
 
 		glUseProgram(program);
-		locModel = glGetUniformLocation(program, "Model");
-		locView = glGetUniformLocation(program, "View");
 		locProject = glGetUniformLocation(program, "Projection");
+		locView = glGetUniformLocation(program, "View");
+		locModel = glGetUniformLocation(program, "Model");
 		locKd = glGetUniformLocation(program, "Kd");
 		locKa = glGetUniformLocation(program, "Ka");
 		glUseProgram(NULL);
