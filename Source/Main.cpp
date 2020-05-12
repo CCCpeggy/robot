@@ -121,6 +121,7 @@ int main(int argc, char **argv)
 	}
 
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_CLAMP);
 
 	glDepthFunc(GL_LEQUAL);
 	glEnable(GL_TEXTURE_2D);
