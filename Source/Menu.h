@@ -29,6 +29,7 @@ namespace Menu{
 		//加入右鍵物件
 		glutAddMenuEntry("idle", Robot::MODE_IDLE);
 		glutAddMenuEntry("walk", Robot::MODE_WALK);
+		glutAddMenuEntry("wave", Robot::MODE_WAVE);
 		glutAttachMenu(GLUT_RIGHT_BUTTON);	//與右鍵關聯
 
 		// ModeMenu = glutCreateMenu(ModeMenuEvents);//建立右鍵菜單

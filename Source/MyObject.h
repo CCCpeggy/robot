@@ -4,7 +4,7 @@
 #include "MyShader.h"
 
 #define PI 3.14159265358979f
-#define DOR(angle) ((angle) * PI / 180);
+#define DOR(angle) ((angle) * PI / 180)
 
 class MyObject {
 protected:

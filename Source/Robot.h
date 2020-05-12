@@ -9,6 +9,8 @@ class Robot {
 public:
 	static const int MODE_WALK;
 	static const int MODE_IDLE;
+	static const int MODE_RUN;
+	static const int MODE_WAVE;
 protected:
 	MyObject body;
 	MyObject ulefthand;
@@ -61,7 +63,7 @@ public:
 		drightleg(shader, MyObject::DRAW_TYPE_INSTANCE),
 		rightfoot(shader, MyObject::DRAW_TYPE_INSTANCE),
 		frame(0),
-		mode(MODE_IDLE),
+		mode(MODE_WAVE),
 		angle(0),
 		position(0),
 		angles{0}
@@ -160,6 +162,9 @@ public:
 		else if (mode == MODE_IDLE) {
 			updateIdleFrame();
 		}
+		else if (mode == MODE_WAVE) {
+			updateWaveFrame();
+		}
 		glm::mat4 Rotatation[PARTSNUM];
 		glm::mat4 Translation[PARTSNUM];
 		for (int i = 0; i < PARTSNUM; i++) {
@@ -169,21 +174,26 @@ public:
 		float r, pitch, yaw, roll;
 		float alpha, beta, gamma;
 
-		angles[6] = -angles[1];
-		angles[7] = angles[2];
-		angles[15] = -angles[12];
-		angles[16] = angles[13];
+		if (mode != MODE_RUN) {
+			if (mode != MODE_WAVE) {
+				angles[6] = -angles[1];
+			}
+			angles[7] = angles[2];
+			angles[15] = -angles[12];
+			angles[16] = angles[13];
+		}
 
 		//Body
+		alpha = DOR(angles[0]);
 		beta = DOR(angle);
-		Rotatation[0] = glm::rotate(beta, glm::vec3(0, 1, 0));
+		Rotatation[0] = glm::rotate(alpha, glm::vec3(1, 0, 0)) * glm::rotate(beta, glm::vec3(0, 1, 0));
 		Translation[0] = glm::translate(glm::vec3(0, 2.9 + position, 0));
 		body.setModelMt(&(this->modelMt * Translation[0] * Rotatation[0]));
 		//左手=======================================================
 		//左上手臂
 		yaw = DOR(beta); r = 3.7;
 		alpha = DOR(angles[1]);
-		gamma = DOR(10);
+		gamma = DOR(10+ angles[3]);
 		Rotatation[1] = glm::rotate(alpha, glm::vec3(1, 0, 0)) * glm::rotate(gamma, glm::vec3(0, 0, 1));//向前旋轉*向右旋轉
 		Translation[1] = glm::translate(glm::vec3(3.7, 1, -0.5));
 
@@ -202,9 +212,16 @@ public:
 
 		pitch = DOR(alpha);
 		roll = DOR(gamma);
+		gamma = DOR(angles[3] * 2);
+		beta = 0;
+		if (mode == MODE_WAVE) {
+			beta = DOR(-90);
+			alpha = DOR(15);
+		}
 		//延x軸位移以上手臂為半徑的圓周長:translate(0,r*cos,r*sin) ,角度為上手臂+下手臂
+		Rotatation[3] = glm::rotate(alpha, glm::vec3(1, 0, 0)) * glm::rotate(gamma, glm::vec3(0, 0, 1)) * glm::rotate(beta, glm::vec3(0, 1, 0));
 		Translation[3] = glm::translate(glm::vec3(0, -4.8, 0));
-		lefthand.setModelMt(&(dlefthand.modelMt * Translation[3]));
+		lefthand.setModelMt(&(dlefthand.modelMt * Translation[3] * Rotatation[3]));
 
 		//============================================================
 		//頭==========================================================
@@ -272,6 +289,7 @@ public:
 
 		pitch = (alpha); r = -5;
 		roll = (gamma);
+		alpha = (angles[16] + angles[15] > 75) ? DOR(75) : alpha;
 		Translation[17] = glm::translate(glm::vec3(-(r + 2) * sin(roll), r * cos(pitch), r * sin(pitch) - 0.5)) * Translation[16];
 		Rotatation[17] = glm::rotate(alpha, glm::vec3(1, 0, 0));
 		rightfoot.setModelMt(&(this->modelMt* Translation[17] * Rotatation[17]));
@@ -316,29 +334,27 @@ public:
 	}
 
 	void updateIdleFrame() {
-		angles[1] = 0;
-		angles[2] = 0;
-		angles[12] = 0;
-		angles[13] = 0;
-		position = 0;
+		if (frame++) {
+			for (int i = 0; i < PARTSNUM; i++) {
+				angles[i] = 0;
+			}
+			position = 0;
+		}
 	}
 
 	void updateWalkFrame() {
-		frame++;
 		int speed = 6;
 		if (frame >= 13 * speed) {
 			frame  = speed;
 		}
-		if (frame % speed) return;
+		if (frame++ % speed) return;
 		switch (frame / speed) {
 		case 0:
-			//左手
+			for (int i = 0; i < PARTSNUM; i++) {
+				angles[i] = 0;
+			}
 			angles[2] = -45;
-			//右手
-
-			//腿
 			angles[13] = 45;
-
 			break;
 		case 1:
 		case 2:
@@ -375,6 +391,87 @@ public:
 		}
 	}
 	
+	void updateWaveFrame() {
+		int speed = 7;
+		if (frame >= 7 * speed) {
+			frame = speed;
+		}
+		if (frame++ % speed) return;
+		switch (frame / speed) {
+		case 0:
+
+			for (int i = 0; i < PARTSNUM; i++) {
+				angles[i] = 0;
+			}
+			angles[1] = 200;
+			angles[3] -= 15;
+			break;
+		case 1:
+		case 2:
+		case 3:
+			angles[3] += 10;
+			break;
+		case 4:
+		case 5:
+		case 6:
+			angles[3] -= 10;
+			break;
+		}
+	}
+
+	void updateRunFrame() {
+		int speed = 4;
+		if (frame >= 13 * speed) {
+			frame = speed;
+		}
+		if (frame++ % speed) return;
+		switch (frame / speed) {
+		case 0:
+			for (int i = 0; i < PARTSNUM; i++) {
+				angles[i] = 0;
+			}
+			break;
+		case 1:
+		case 2:
+		case 3:
+			angles[13] -= 15;
+			break;
+		case 4:
+		case 5:
+		case 6:
+			angles[12] += 5;
+			angles[13] -= 5;
+
+			angles[12] -= 10;
+			angles[13] += 15;
+			angles[15] -= 5;
+			angles[16] += 5;
+			position -= 0.5;
+
+			angles[1] -= 15;
+			angles[12] -= 5;
+			angles[13] -= 5;
+			angles[15] -= 5;
+			angles[16] += 5;
+			position -= 0.5;
+			break;
+		case 7:
+		case 8:
+		case 9:
+			angles[1] -= 15;
+			angles[12] += 15;
+			angles[13] += 35;
+			position += 0.5;
+			break;
+		case 10:
+		case 11:
+		case 12:
+			angles[1] += 15;
+			angles[12] -= 15;
+			position -= 0.5;
+			break;
+		}
+	}
 	void draw() {
 		for (std::vector<MyObject*>::iterator iter = allObjs.begin();
 			iter != allObjs.end();
@@ -397,4 +494,6 @@ public:
 
 const int Robot::MODE_WALK = 1;
 const int Robot::MODE_IDLE = 0;
+const int Robot::MODE_RUN = 2;
+const int Robot::MODE_WAVE = 3;
 #endif
