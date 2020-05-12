@@ -48,6 +48,9 @@ namespace Menu{
 		glutAddMenuEntry("normal", FrameBuffer::SHADER_MODE_NORMAL);
 		glutAddMenuEntry("gray", FrameBuffer::SHADER_MODE_GRAY);
 		glutAddMenuEntry("pixel", FrameBuffer::SHADER_MODE_PIXEL);
+		glutAddMenuEntry("sharpen", FrameBuffer::SHADER_MODE_KERNEL);
+		glutAddMenuEntry("Gussian blur", FrameBuffer::SHADER_MODE_GUSSIAN_BLUR);
+
 		glutAttachMenu(GLUT_RIGHT_BUTTON);	//與右鍵關聯
 
 		glutCreateMenu(nullptr);//建立右鍵菜單
