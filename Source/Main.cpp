@@ -12,6 +12,7 @@ float eyeAngley = 0.0;
 float eyedistance = 20.0;
 
 extern Robot *robot;
+extern FrameBuffer mainFBO;
 MyShader* robotShader;
 
 // 渲染事件, 用來在場景上繪製東西
@@ -29,7 +30,7 @@ void My_Init() {
 		glm::vec3(0, -1, 0)  // Head is up (set to 0,1,0 to look upside-down)
 	);
 
-	FrameBuffer::init();
+	mainFBO.init();
 	Skybox::init();
 	robot = new Robot(robotShader);
 }
@@ -37,7 +38,7 @@ void My_Init() {
 
 void My_Display()
 {
-	FrameBuffer::use();
+	mainFBO.use();
 
 	float eyey = DOR(eyeAngley);
 	viewMt = glm::lookAt(
@@ -56,7 +57,7 @@ void My_Display()
 	robot -> setMt(&modelMt, &viewMt, &projectMt);
 	robot -> draw();
 
-	FrameBuffer::draw();
+	mainFBO.draw();
 	// CheckGLError();
 
 	glFlush();//強制執行上次的OpenGL commands
@@ -66,7 +67,7 @@ void My_Display()
 void ReshapeWindow(int w, int h) {
 	if (h == 0) h = 1;
 	projectMt = glm::perspective(80.0f, 4.0f / 3.0f, 0.1f, 1000.0f);
-	FrameBuffer::reshape(w, h);
+	mainFBO.reshape(w, h);
 }
 
 //計時器事件, 經指定時間後該函式被呼叫

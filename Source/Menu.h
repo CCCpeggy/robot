@@ -6,6 +6,7 @@
 #include "Framebuffer.h"
 
 Robot* robot;
+FrameBuffer mainFBO;
 
 namespace Menu{
 
@@ -18,7 +19,7 @@ namespace Menu{
 	}
 
 	void ShaderModeMenuEvents(int mode) {
-		FrameBuffer::switchMode(mode);
+		mainFBO.switchMode(mode);
 	}
 
 	void create() {

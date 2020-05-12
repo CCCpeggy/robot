@@ -3,8 +3,8 @@
 #include "../Include/Common.h"
 #include "../Source/MyShader.h"
 
-namespace FrameBuffer {
-
+class FrameBuffer {
+public:
 	MyShader* grayShader;
 
 	GLuint window_vao;
@@ -12,19 +12,15 @@ namespace FrameBuffer {
 	GLuint FBO;
 	GLuint depthRBO;
 	GLuint FBODataTexture;
-	const int SHADER_MODE_NORMAL = 0;
-	const int SHADER_MODE_GRAY = 1;
-	const int SHADER_MODE_PIXEL = 2;
-	int mode = SHADER_MODE_NORMAL;
-
-	static const GLfloat window_positions[] =
+	static const int SHADER_MODE_NORMAL;
+	static const int SHADER_MODE_GRAY;
+	static const int SHADER_MODE_PIXEL;
+	int mode;
+	static const GLfloat window_positions[16];
+	FrameBuffer():mode(SHADER_MODE_NORMAL)
 	{
-		1.0f,-1.0f,1.0f,0.0f,
-		-1.0f,-1.0f,0.0f,0.0f,
-		-1.0f,1.0f,0.0f,1.0f,
-		1.0f,1.0f,1.0f,1.0f
-	};
 
+	}
 	void init()
 	{
 		grayShader = new MyShader("../Source/ColorShader.vs", "../Source/ColorShader.fs");
@@ -93,5 +89,17 @@ namespace FrameBuffer {
 		mode = newMode;
 	}
 
-}
+};
+
+const int FrameBuffer::SHADER_MODE_NORMAL = 0;
+const int FrameBuffer::SHADER_MODE_GRAY = 1;
+const int FrameBuffer::SHADER_MODE_PIXEL = 2;
+
+const GLfloat FrameBuffer::window_positions[] =
+{
+	1.0f,-1.0f,1.0f,0.0f,
+	-1.0f,-1.0f,0.0f,0.0f,
+	-1.0f,1.0f,0.0f,1.0f,
+	1.0f,1.0f,1.0f,1.0f
+};
 #endif

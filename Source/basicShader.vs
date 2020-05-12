@@ -10,7 +10,7 @@ layout(location = 2) in vec3 vertexNormal;
 layout(location = 3) in vec3 vOffset;
 layout(location = 4) in vec3 vKd;
 
-vec3 vLightPosition = vec3(0, 20, 50);
+vec3 vLightPosition = vec3(0, 10, 50);
 
 uniform mat4 View;
 uniform mat4 Projection;
