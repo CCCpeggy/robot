@@ -128,11 +128,11 @@ public:
 	
 	void addRobots() {
 		glm::vec3 offsets[] = {
-			glm::vec3(45.0f, 0.0f, -60.0f),
-			glm::vec3(0.0f, 0.0f, -60.0f),
-			glm::vec3(-45.0f, 0.0f, -60.0f),
-			glm::vec3(-15.0f, 0.0f, -30.0f),
-			glm::vec3(15.0f, 0.0f, -30.0f),
+			glm::vec3(35.0f, 3.0f, -30.0f),
+			glm::vec3(0.0f, 0.0f, -30.0f),
+			glm::vec3(-35.0f, 3.0f, -30.0f),
+			glm::vec3(-12.0f, 3.0f, -10.0f),
+			glm::vec3(12.0f, 3.0f, -10.0f),
 			glm::vec3(0.0f, 0.0f, 0.0f)
 		};
 		for (auto offset : offsets) {
