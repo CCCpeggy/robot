@@ -27,6 +27,12 @@
     <None Include="..\..\Source\BasicShader.vs">
       <Filter>資源檔</Filter>
     </None>
+    <None Include="..\..\Source\ColorShader.fs">
+      <Filter>資源檔</Filter>
+    </None>
+    <None Include="..\..\Source\ColorShader.vs">
+      <Filter>資源檔</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\Robot.h">
@@ -42,6 +48,9 @@
       <Filter>標頭檔</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Skybox.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\FrameBuffer.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
   </ItemGroup>

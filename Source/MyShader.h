@@ -12,6 +12,7 @@ protected:
 	GLuint locProject;
 	GLuint locKd;
 	GLuint locKa;
+	GLuint locMode;
 
 public:
 	MyShader(std::string vsPath = nullptr, std::string fsPath = nullptr) {
@@ -22,6 +23,7 @@ public:
 			const char* vsPointer = vsSource.c_str();
 			glShaderSource(vs, 1, &vsPointer, NULL);
 			glCompileShader(vs);
+			ShaderLog(vs);
 			glAttachShader(program, vs);
 		}
 		if (!fsPath.empty()) {
@@ -30,6 +32,7 @@ public:
 			const char* fsPointer = fsSource.c_str();
 			glShaderSource(fs, 1, &fsPointer, NULL);
 			glCompileShader(fs);
+			ShaderLog(fs);
 			glAttachShader(program, fs);
 		}
 		glLinkProgram(program);
@@ -40,6 +43,7 @@ public:
 		locModel = glGetUniformLocation(program, "Model");
 		locKd = glGetUniformLocation(program, "Kd");
 		locKa = glGetUniformLocation(program, "Ka");
+		locMode = glGetUniformLocation(program, "Mode");
 		glUseProgram(NULL);
 	}
 
@@ -52,9 +56,8 @@ public:
 		glUniformMatrix4fv(locModel, 1, GL_FALSE, &(*modelMt)[0][0]);
 	}
 
-	void setMaterial(glm::vec3 kd, glm::vec3 ka) {
-		glUniform3fv(locKd, 1, &kd[0]);
-		glUniform3fv(locKa, 1, &ka[0]);
+	void setMode(int mode) {
+		glUniform1i(locMode, mode);
 	}
 
 	void use() {

@@ -3,6 +3,7 @@
 #include "../Source/MyShader.h"
 #include "../Source/Menu.h"
 #include "../Source/Skybox.h"
+#include "../Source/FrameBuffer.h"
 
 glm::mat4x4 modelMt;
 glm::mat4x4 viewMt;
@@ -28,6 +29,7 @@ void My_Init() {
 		glm::vec3(0, -1, 0)  // Head is up (set to 0,1,0 to look upside-down)
 	);
 
+	FrameBuffer::init();
 	Skybox::init();
 	robot = new Robot(robotShader);
 }
@@ -35,7 +37,7 @@ void My_Init() {
 
 void My_Display()
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	FrameBuffer::use();
 
 	float eyey = DOR(eyeAngley);
 	viewMt = glm::lookAt(
@@ -45,13 +47,17 @@ void My_Display()
 	);
 
 	modelMt = glm::mat4(1.0f);
-
-	robot -> setMt(&modelMt, &viewMt, &projectMt);
-	robot -> draw();
-
+	glDepthFunc(GL_LEQUAL);
 	Skybox::use();
 	Skybox::setViewProjectMt(&viewMt, &projectMt);
 	Skybox::draw();
+
+	glDepthFunc(GL_LESS);
+	robot -> setMt(&modelMt, &viewMt, &projectMt);
+	robot -> draw();
+
+	FrameBuffer::draw();
+	// CheckGLError();
 
 	glFlush();//強制執行上次的OpenGL commands
 	glutSwapBuffers();
@@ -60,6 +66,7 @@ void My_Display()
 void ReshapeWindow(int w, int h) {
 	if (h == 0) h = 1;
 	projectMt = glm::perspective(80.0f, 4.0f / 3.0f, 0.1f, 1000.0f);
+	FrameBuffer::reshape(w, h);
 }
 
 //計時器事件, 經指定時間後該函式被呼叫
@@ -114,15 +121,11 @@ int main(int argc, char **argv)
 	}
 
 	glEnable(GL_DEPTH_TEST);
-	glCullFace(GL_BACK);
-	glEnable(GL_CULL_FACE);
 
 	glDepthFunc(GL_LEQUAL);
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
 	My_Init();
 

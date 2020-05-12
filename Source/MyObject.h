@@ -128,6 +128,13 @@ public:
 		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 		buffer[normals_vbo] = GL_ARRAY_BUFFER;
 
+		glGenBuffers(1, &kds_vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, kds_vbo);
+		glBufferData(GL_ARRAY_BUFFER, KDs.size() * sizeof(float) * 3, &KDs[0], GL_STATIC_DRAW);
+		glEnableVertexAttribArray(4);
+		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+		buffer[kds_vbo] = GL_ARRAY_BUFFER;
+
 		glGenBuffers(1, &offsets_vbo);
 		glBindBuffer(GL_ARRAY_BUFFER, offsets_vbo);
 		glEnableVertexAttribArray(3);
@@ -137,13 +144,6 @@ public:
 			glBufferData(GL_ARRAY_BUFFER, offsets.size() * sizeof(float) * 3, &offsets[0], GL_STATIC_DRAW);
 		}
 		buffer[offsets_vbo] = GL_ARRAY_BUFFER;
-
-		glGenBuffers(1, &kds_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, kds_vbo);
-		glBufferData(GL_ARRAY_BUFFER, KDs.size() * sizeof(float) * 3, &KDs[0], GL_STATIC_DRAW);
-		glEnableVertexAttribArray(4);
-		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-		buffer[kds_vbo] = GL_ARRAY_BUFFER;
 
 		glBindVertexArray(NULL);
 	}

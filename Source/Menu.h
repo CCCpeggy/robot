@@ -3,6 +3,7 @@
 #include "../Include/Common.h"
 #include "Robot.h"
 #include "MyObject.h"
+#include "Framebuffer.h"
 
 Robot* robot;
 
@@ -14,6 +15,10 @@ namespace Menu{
 
 	void DrawTypeMenuEvents(int drawType) {
 		robot->setDrawType(drawType);
+	}
+
+	void ShaderModeMenuEvents(int mode) {
+		FrameBuffer::switchMode(mode);
 	}
 
 	void create() {
@@ -37,10 +42,18 @@ namespace Menu{
 		glutAddMenuEntry("a lot of robots", MyObject::DRAW_TYPE_INSTANCE);
 		glutAttachMenu(GLUT_RIGHT_BUTTON);	//與右鍵關聯
 
+		ShaderMenu = glutCreateMenu(ShaderModeMenuEvents);//建立右鍵菜單
+		//加入右鍵物件
+		glutAddMenuEntry("normal", FrameBuffer::SHADER_MODE_NORMAL);
+		glutAddMenuEntry("gray", FrameBuffer::SHADER_MODE_GRAY);
+		glutAddMenuEntry("pixel", FrameBuffer::SHADER_MODE_PIXEL);
+		glutAttachMenu(GLUT_RIGHT_BUTTON);	//與右鍵關聯
+
 		glutCreateMenu(nullptr);//建立右鍵菜單
 		//加入右鍵物件
 		glutAddSubMenu("action", ActionMenu);
 		glutAddSubMenu("draw type", DrawTypeMenu);
+		glutAddSubMenu("shader mode", ShaderMenu);
 		// glutAddSubMenu("mode", ModeMenu);
 		glutAttachMenu(GLUT_RIGHT_BUTTON);	//與右鍵關聯
 	}

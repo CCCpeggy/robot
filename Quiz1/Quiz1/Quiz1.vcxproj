@@ -16,6 +16,8 @@
   <ItemGroup>
     <None Include="..\..\Source\BasicShader.fs" />
     <None Include="..\..\Source\BasicShader.vs" />
+    <None Include="..\..\Source\ColorShader.fs" />
+    <None Include="..\..\Source\ColorShader.vs" />
     <None Include="..\..\Source\SkyboxShader.fs" />
     <None Include="..\..\Source\SkyboxShader.vs" />
   </ItemGroup>
@@ -25,6 +27,7 @@
     <ClInclude Include="..\..\Source\Robot.h" />
     <ClInclude Include="..\..\Source\MyShader.h" />
     <ClInclude Include="..\..\Source\Skybox.h" />
+    <ClInclude Include="..\..\Source\FrameBuffer.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{610A51F2-C653-47BB-91C5-17EDAB56EF54}</ProjectGuid>

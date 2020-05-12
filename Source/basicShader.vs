@@ -24,6 +24,8 @@ out vec3 Kd;
 
 void main(void) 
 { 
+    Kd = vKd;
+
     mat4 offsetMatrix;
     offsetMatrix[0][0] = 1;
     offsetMatrix[1][1] = 1;
@@ -49,6 +51,4 @@ void main(void)
 	UV = vertexUV;
     // Don't forget to transform the geometry!
     gl_Position = MVP * vec4(vPosition, 1);
-
-    Kd = vKd;
 }
