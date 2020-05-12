@@ -25,8 +25,24 @@ out vec3 Kd;
 void main(void) 
 { 
     Kd = vKd;
-
-    mat4 offsetMatrix;
+	mat4 offsetMatrix;
+    offsetMatrix[0][0] = 0;
+    offsetMatrix[0][1] = 0;
+    offsetMatrix[0][2] = 0;
+    offsetMatrix[0][3] = 0;
+    offsetMatrix[1][0] = 0;
+    offsetMatrix[1][1] = 0;
+    offsetMatrix[1][2] = 0;
+    offsetMatrix[1][3] = 0;
+    offsetMatrix[2][0] = 0;
+    offsetMatrix[2][1] = 0;
+    offsetMatrix[2][2] = 0;
+    offsetMatrix[2][3] = 0;
+    offsetMatrix[3][0] = 0;
+    offsetMatrix[3][1] = 0;
+    offsetMatrix[3][2] = 0;
+    offsetMatrix[3][3] = 0;
+	
     offsetMatrix[0][0] = 1;
     offsetMatrix[1][1] = 1;
     offsetMatrix[2][2] = 1;
@@ -34,8 +50,8 @@ void main(void)
     offsetMatrix[3][0] = vOffset.x;
     offsetMatrix[3][1] = vOffset.y;
     offsetMatrix[3][2] = vOffset.z;
-	mat4 MVP = Projection*View*offsetMatrix * Model;
-	mat4 MV = View*Model;
+	mat4 MVP = Projection*View *offsetMatrix* Model;
+	mat4 MV = View*offsetMatrix*Model;
 	
     // Get surface normal in eye coordinates
 	mat3 normalMatrix = mat3(MV); //normal matrix is MV matrix's 3*3 excluding 'w' 
