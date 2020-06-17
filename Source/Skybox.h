@@ -9,12 +9,12 @@ namespace Skybox {
 	MyObject *skybox;
 
 	std::string fileName[6] = {
-		"./Skybox/posx.png",
-		"./Skybox/negx.png",
-		"./Skybox/posy.png",
-		"./Skybox/negy.png",
-		"./Skybox/posz.png",
-		"./Skybox/negz.png"
+		"../Assets/Skybox/posx.png",
+		"../Assets/Skybox/negx.png",
+		"../Assets/Skybox/posy.png",
+		"../Assets/Skybox/negy.png",
+		"../Assets/Skybox/posz.png",
+		"../Assets/Skybox/negz.png"
 	};
 
 	GLenum type[6] = {
