@@ -11,6 +11,7 @@ public:
 	static const int MODE_IDLE;
 	static const int MODE_RUN;
 	static const int MODE_WAVE;
+	static const int MODE_JUMP;
 protected:
 	MyObject body;
 	MyObject ulefthand;
@@ -158,12 +159,26 @@ public:
 	void update() {
 		if (mode == MODE_WALK) {
 			updateWalkFrame();
+			angles[7] = angles[2];
+			angles[15] = -angles[12];
+			angles[16] = angles[13];
+			angles[6] = -angles[1];
 		}
 		else if (mode == MODE_IDLE) {
 			updateIdleFrame();
+			angles[7] = angles[2];
+			angles[15] = -angles[12];
+			angles[16] = angles[13];
+			angles[6] = -angles[1];
 		}
 		else if (mode == MODE_WAVE) {
 			updateWaveFrame();
+			angles[7] = angles[2];
+			angles[15] = -angles[12];
+			angles[16] = angles[13];
+		}
+		else if (mode == MODE_JUMP) {
+			updateJumpFrame();
 		}
 		glm::mat4 Rotatation[PARTSNUM];
 		glm::mat4 Translation[PARTSNUM];
@@ -174,14 +189,14 @@ public:
 		float r, pitch, yaw, roll;
 		float alpha, beta, gamma;
 
-		if (mode != MODE_RUN) {
+		/*if (mode != MODE_RUN) {
 			if (mode != MODE_WAVE) {
 				angles[6] = -angles[1];
 			}
 			angles[7] = angles[2];
 			angles[15] = -angles[12];
 			angles[16] = angles[13];
-		}
+		}*/
 
 		//Body
 		alpha = DOR(angles[0]);
@@ -229,8 +244,8 @@ public:
 		head.setModelMt(&(body.modelMt * Translation[5]));
 		//============================================================
 		//右手=========================================================
-		gamma = DOR(-10); 
-		alpha = DOR(angles[6]);
+		gamma = DOR(angles[6]); 
+		alpha = DOR(10+angles[8]);
 		Rotatation[6] = glm::rotate(alpha, glm::vec3(1, 0, 0)) * glm::rotate(gamma, glm::vec3(0, 0, 1));
 		Translation[6] = glm::translate(glm::vec3(-3.9, 1.7, -0.2));
 		urighthand.setModelMt(&(body.modelMt * Translation[6] * Rotatation[6]));
@@ -472,6 +487,43 @@ public:
 			break;
 		}
 	}
+	//0身體 1左主手 2左小手 3左手側轉 4? 5?  6右主手 7右小手 8?右主 9? 10? 11?
+	//12 左大腿 13左小腿 14?? 15右大腿 16右小腿 17? 
+	void updateJumpFrame() {
+		int speed = 4;
+		if (frame >= 13 * speed) {
+			frame = speed;
+		}
+		if (frame++ % speed) return;
+		switch (frame / speed) {
+		case 0:
+			for (int i = 0; i < PARTSNUM; i++) {
+				angles[i] = 0;
+			}
+			break;
+		case 1:
+			
+		case 2:
+		case 3:
+			//angles[16] -= 15;
+			break;
+		case 4:
+		case 5:
+		case 6:
+			angles[6] -= 10;
+
+			break;
+		case 7:
+			break;
+		case 8:
+		case 9:
+			break;
+		case 10:
+		case 11:
+		case 12:
+			break;
+		}
+	}
 	void draw() {
 		for (std::vector<MyObject*>::iterator iter = allObjs.begin();
 			iter != allObjs.end();
@@ -496,4 +548,5 @@ const int Robot::MODE_WALK = 1;
 const int Robot::MODE_IDLE = 0;
 const int Robot::MODE_RUN = 2;
 const int Robot::MODE_WAVE = 3;
+const int Robot::MODE_JUMP = 4;
 #endif
