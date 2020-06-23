@@ -51,7 +51,6 @@ namespace Menu{
 		glutAddMenuEntry("pixel", FrameBuffer::SHADER_MODE_PIXEL);
 		glutAddMenuEntry("sharpen", FrameBuffer::SHADER_MODE_KERNEL);
 		glutAddMenuEntry("Gussian blur", FrameBuffer::SHADER_MODE_GUSSIAN_BLUR);
-		glutAddMenuEntry("Android 9", FrameBuffer::SHADER_MODE_ANDROID_9);
 
 		glutAttachMenu(GLUT_RIGHT_BUTTON);	//ªP•k¡‰√ˆ¡p
 
