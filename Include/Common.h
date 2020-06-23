@@ -26,6 +26,8 @@
 #include <math.h>
 #include <vector>
 #include <conio.h>
+#include <cstdlib>
+#include <time.h>
 
 #define __FILENAME__ (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)
 #define __FILEPATH__(x) ((std::string(__FILE__).substr(0, std::string(__FILE__).rfind('\\'))+(x)).c_str())

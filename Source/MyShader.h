@@ -13,6 +13,7 @@ protected:
 	GLuint locKd;
 	GLuint locKa;
 	GLuint locMode;
+	GLuint locTime;
 
 public:
 	MyShader(std::string vsPath = nullptr, std::string fsPath = nullptr) {
@@ -44,6 +45,7 @@ public:
 		locKd = glGetUniformLocation(program, "Kd");
 		locKa = glGetUniformLocation(program, "Ka");
 		locMode = glGetUniformLocation(program, "Mode");
+		locTime = glGetUniformLocation(program, "Time");
 		glUseProgram(NULL);
 	}
 
@@ -58,6 +60,10 @@ public:
 
 	void setMode(int mode) {
 		glUniform1i(locMode, mode);
+	}
+
+	void setTime(float time) {
+		glUniform1f(locTime, time);
 	}
 
 	void use() {

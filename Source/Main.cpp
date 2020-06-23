@@ -47,11 +47,13 @@ void My_Display()
 		glm::vec3(0, -1, 0)
 	);
 
-	modelMt = glm::mat4() * 0.5f;
-	glDepthFunc(GL_LEQUAL);
-	Skybox::use();
-	Skybox::setViewProjectMt(&viewMt, &projectMt);
-	Skybox::draw();
+	if (mainFBO.mode < mainFBO.SHADER_MODE_ANDROID) {
+		modelMt = glm::mat4() * 0.5f;
+		glDepthFunc(GL_LEQUAL);
+		Skybox::use();
+		Skybox::setViewProjectMt(&viewMt, &projectMt);
+		Skybox::draw();
+	}
 
 	glDepthFunc(GL_LESS);
 	robot -> setMt(&modelMt, &viewMt, &projectMt);

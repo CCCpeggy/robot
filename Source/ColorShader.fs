@@ -1,7 +1,8 @@
 #version 430 core                                                              
 
 uniform sampler2D tex;                                                         
-uniform int Mode;                                                         
+uniform int Mode;
+uniform float Time;
 
 out vec4 color;                                                                
 
@@ -50,26 +51,44 @@ void main(void)
         color = col;
     }
     else if (Mode == 4) {
-    float kernal[9] = float[](
-        1, 2, 1,
-        2, 4, 2,
-        1, 2, 1
-    );
-    float offsetX = 1.0 / 800.0;
-    float offsetY = 1.0 / 600.0;
+        float kernal[9] = float[](
+            1, 2, 1,
+            2, 4, 2,
+            1, 2, 1
+        );
+        float offsetX = 1.0 / 800.0;
+        float offsetY = 1.0 / 600.0;
 
-    vec4 col = vec4(0.0);
-    col += kernal[0]/16.0 * texture(tex, fs_in.texcoord.st + vec2(-offsetX, offsetY));
-    col += kernal[1]/16.0 * texture(tex, fs_in.texcoord.st + vec2(0.0f, offsetY));
-    col += kernal[2]/16.0 * texture(tex, fs_in.texcoord.st + vec2(offsetX, offsetY));
-    col += kernal[3]/16.0 * texture(tex, fs_in.texcoord.st + vec2(-offsetX, 0.0f));
-    col += kernal[4]/16.0 * texture(tex, fs_in.texcoord.st + vec2(0.0f, 0.0f));
-    col += kernal[5]/16.0 * texture(tex, fs_in.texcoord.st + vec2(-offsetX, 0.0f));
-    col += kernal[6]/16.0 * texture(tex, fs_in.texcoord.st + vec2(-offsetX, -offsetY));
-    col += kernal[7]/16.0 * texture(tex, fs_in.texcoord.st + vec2(-0.0f, -offsetY));
-    col += kernal[8]/16.0 * texture(tex, fs_in.texcoord.st + vec2(offsetX, -offsetY));
+        vec4 col = vec4(0.0);
+        col += kernal[0]/16.0 * texture(tex, fs_in.texcoord.st + vec2(-offsetX, offsetY));
+        col += kernal[1]/16.0 * texture(tex, fs_in.texcoord.st + vec2(0.0f, offsetY));
+        col += kernal[2]/16.0 * texture(tex, fs_in.texcoord.st + vec2(offsetX, offsetY));
+        col += kernal[3]/16.0 * texture(tex, fs_in.texcoord.st + vec2(-offsetX, 0.0f));
+        col += kernal[4]/16.0 * texture(tex, fs_in.texcoord.st + vec2(0.0f, 0.0f));
+        col += kernal[5]/16.0 * texture(tex, fs_in.texcoord.st + vec2(-offsetX, 0.0f));
+        col += kernal[6]/16.0 * texture(tex, fs_in.texcoord.st + vec2(-offsetX, -offsetY));
+        col += kernal[7]/16.0 * texture(tex, fs_in.texcoord.st + vec2(-0.0f, -offsetY));
+        col += kernal[8]/16.0 * texture(tex, fs_in.texcoord.st + vec2(offsetX, -offsetY));
 
-    color = col;
+        color = col;
+    }
+    else if (Mode == 5) {
+        vec3 mColor = vec3(1, 0, 0);
+
+        if (texture_color.a < 1) {
+            vec2 coord = fs_in.texcoord * 2 - vec2(1, 1);
+            float distance = sqrt(coord.x * coord.x + coord.y * coord.y);
+            if (distance > 0.5 && (int(abs(distance + Time) * 6)) % 2 == 0) {
+                color.xyz = mColor;
+            }
+            else {
+                color.xyz = 1 - mColor;
+            }
+            color.w = 1;
+        }
+        else {
+            color = texture_color;
+        }
     }
 
 }                                                                              
