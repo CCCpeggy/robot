@@ -17,6 +17,7 @@ public:
 	static const int SHADER_MODE_PIXEL;
 	static const int SHADER_MODE_KERNEL;
 	static const int SHADER_MODE_GUSSIAN_BLUR;
+	static const int SHADER_MODE_ANDROID_9;
 
 	int mode;
 	static const GLfloat window_positions[16];
@@ -99,6 +100,7 @@ const int FrameBuffer::SHADER_MODE_GRAY = 1;
 const int FrameBuffer::SHADER_MODE_PIXEL = 2;
 const int FrameBuffer::SHADER_MODE_KERNEL = 3;
 const int FrameBuffer::SHADER_MODE_GUSSIAN_BLUR = 4;
+const int FrameBuffer::SHADER_MODE_ANDROID_9 = 5;
 
 
 const GLfloat FrameBuffer::window_positions[] =

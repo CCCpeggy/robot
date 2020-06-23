@@ -48,10 +48,10 @@ void My_Display()
 	);
 
 	modelMt = glm::mat4() * 0.5f;
-	glDepthFunc(GL_LEQUAL);
-	Skybox::use();
-	Skybox::setViewProjectMt(&viewMt, &projectMt);
-	Skybox::draw();
+	//glDepthFunc(GL_LEQUAL);
+	//Skybox::use();
+	//Skybox::setViewProjectMt(&viewMt, &projectMt);
+	//Skybox::draw();
 
 	glDepthFunc(GL_LESS);
 	robot -> setMt(&modelMt, &viewMt, &projectMt);
@@ -128,7 +128,7 @@ int main(int argc, char **argv)
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
+	
 	My_Init();
 
 	//註冊GLUT回呼事件

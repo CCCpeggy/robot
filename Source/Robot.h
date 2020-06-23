@@ -407,9 +407,9 @@ public:
 		switch (frame / speed) {
 		case 0:
 			reset();
-			beta[3] = beta[8] = DOR(-90);
-			alpha[8] = DOR(15);
-			alpha[8] = DOR(-15);
+			beta[3] = beta[8] = -90;
+			alpha[8] = 15;
+			alpha[8] = -15;
 			alpha[4] = 200;
 			alpha[8] = 200;
 			gamma[3] -= 45;
