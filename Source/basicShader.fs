@@ -36,5 +36,20 @@ void main(void)
         spec = pow(spec, Shininess);
         vFragColor += specularColor * spec * 0.2;
     }
+    /*
+    vec4 color1;
+    color1.rgb = Kd;
+    color1.a = 1;
+    vec4 color2;
+
+    float intensity = dot(normalize(vVaryingLightDir), vVaryingNormal);
+
+    if (intensity > 0.95)      color2 = vec4(1.0, 1.0, 1.0, 1.0);
+    else if (intensity > 0.75) color2 = vec4(0.8, 0.8, 0.8, 1.0);
+    else if (intensity > 0.50) color2 = vec4(0.6, 0.6, 0.6, 1.0);
+    else if (intensity > 0.25) color2 = vec4(0.4, 0.4, 0.4, 1.0);
+    else                       color2 = vec4(0.2, 0.2, 0.2, 1.0);
+
+    vFragColor = color1 * color2;*/
 }
     

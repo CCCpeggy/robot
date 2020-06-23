@@ -73,6 +73,17 @@ void main(void)
         color = col;
     }
     else if (Mode == 5) {
+        color = texture_color;
+        vec3 mColor = vec3(1, 1, 1);
+
+        vec2 coord = fs_in.texcoord * 2 - vec2(1, 1);
+        float distance = sqrt(coord.x * coord.x + coord.y * coord.y);
+        if (distance > 0.5+ Time * 0.0001 && distance< 0.8+ Time * 0.0001 && (int(abs((distance * 30 - Time * 0.0001)  ))) % 2 == 0) {
+            color.xyz = mColor;
+            color.w = 1;
+        }
+    }
+    else if (Mode == 6) {
         vec3 mColor = vec3(1, 0, 0);
 
         if (texture_color.a < 1) {
