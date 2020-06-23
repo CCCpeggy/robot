@@ -47,7 +47,7 @@ void My_Display()
 		glm::vec3(0, -1, 0)
 	);
 
-	modelMt = glm::mat4(1.0f);
+	modelMt = glm::mat4() * 0.5f;
 	glDepthFunc(GL_LEQUAL);
 	Skybox::use();
 	Skybox::setViewProjectMt(&viewMt, &projectMt);

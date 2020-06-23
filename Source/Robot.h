@@ -13,28 +13,28 @@ public:
 	static const int MODE_WAVE;
 protected:
 	MyObject body;
-	MyObject ulefthand;
 	MyObject dlefthand;
 	MyObject lefthand;
 	MyObject lshouder;
 	MyObject head;
-	MyObject urighthand;
 	MyObject drighthand;
 	MyObject righthand;
 	MyObject rshouder;
-	MyObject dbody;
-	MyObject back2;
 	MyObject uleftleg;
 	MyObject dleftleg;
 	MyObject leftfoot;
 	MyObject urightleg;
 	MyObject drightleg;
 	MyObject rightfoot;
+	MyObject ball;
 	std::vector<MyObject*> allObjs;
 	glm::mat4x4 modelMt;
 	std::vector<glm::mat4x4> stackMat;
 
-	float angles[PARTSNUM];
+	float alpha[PARTSNUM];
+	float beta[PARTSNUM];
+	float gamma[PARTSNUM];
+	glm::vec3 pos[PARTSNUM];
 	float position;
 	float angle;
 
@@ -45,96 +45,82 @@ private:
 public:
 	Robot(MyShader* shader = nullptr):
 		body(shader, MyObject::DRAW_TYPE_INSTANCE),
-		ulefthand(shader, MyObject::DRAW_TYPE_INSTANCE),
 		dlefthand(shader, MyObject::DRAW_TYPE_INSTANCE),
 		lefthand(shader, MyObject::DRAW_TYPE_INSTANCE),
 		lshouder(shader, MyObject::DRAW_TYPE_INSTANCE),
 		head(shader, MyObject::DRAW_TYPE_INSTANCE),
-		urighthand(shader, MyObject::DRAW_TYPE_INSTANCE),
 		drighthand(shader, MyObject::DRAW_TYPE_INSTANCE),
 		righthand(shader, MyObject::DRAW_TYPE_INSTANCE),
 		rshouder(shader, MyObject::DRAW_TYPE_INSTANCE),
-		dbody(shader, MyObject::DRAW_TYPE_INSTANCE),
-		back2(shader, MyObject::DRAW_TYPE_INSTANCE),
 		uleftleg(shader, MyObject::DRAW_TYPE_INSTANCE),
 		dleftleg(shader, MyObject::DRAW_TYPE_INSTANCE),
 		leftfoot(shader, MyObject::DRAW_TYPE_INSTANCE),
 		urightleg(shader, MyObject::DRAW_TYPE_INSTANCE),
 		drightleg(shader, MyObject::DRAW_TYPE_INSTANCE),
 		rightfoot(shader, MyObject::DRAW_TYPE_INSTANCE),
+		ball(shader, MyObject::DRAW_TYPE_INSTANCE),
 		frame(0),
-		mode(MODE_WAVE),
-		angle(0),
-		position(0),
-		angles{0}
+		mode(MODE_WALK)
 	{
 		initRobotPart();
 		addRobots();
+		reset();
 	}
 
 	void initRobotPart() {
 		allObjs.push_back(&body);
-		body.init("../Assets/Robot/body.obj", "../Assets/Robot/gundam.mtl", 0);
-		
-		allObjs.push_back(&ulefthand);
-		ulefthand.init("../Assets/Robot/ulefthand.obj", "../Assets/Robot/gundam.mtl", 1);
+		body.init("../Assets/Robot2/Body.obj", "../Assets/Robot2/Body.mtl", 0);
 		
 		allObjs.push_back(&dlefthand);
-		dlefthand.init("../Assets/Robot/dlefthand.obj", "../Assets/Robot/gundam.mtl", 2);
+		dlefthand.init("../Assets/Robot2/LArm.obj", "../Assets/Robot2/LArm.mtl", 2);
 		
 		allObjs.push_back(&lefthand);
-		lefthand.init("../Assets/Robot/lefthand.obj", "../Assets/Robot/gundam.mtl", 3);
-		
+		lefthand.init("../Assets/Robot2/LHand.obj", "../Assets/Robot2/LHand.mtl", 3);
+
 		allObjs.push_back(&lshouder);
-		lshouder.init("../Assets/Robot/lshouder.obj", "../Assets/Robot/gundam.mtl", 4);
+		lshouder.init("../Assets/Robot2/LShoulder.obj", "../Assets/Robot2/LShoulder.mtl", 4);
 		
 		allObjs.push_back(&head);
-		head.init("../Assets/Robot/head.obj", "../Assets/Robot/gundam.mtl", 5);
-		
-		allObjs.push_back(&urighthand);
-		urighthand.init("../Assets/Robot/urighthand.obj", "../Assets/Robot/gundam.mtl", 6);
+		head.init("../Assets/Robot2/Head.obj", "../Assets/Robot2/Head.mtl", 5);
 		
 		allObjs.push_back(&drighthand);
-		drighthand.init("../Assets/Robot/drighthand.obj", "../Assets/Robot/gundam.mtl", 7);
+		drighthand.init("../Assets/Robot2/RArm.obj", "../Assets/Robot2/RArm.mtl", 7);
 		
 		allObjs.push_back(&righthand);
-		righthand.init("../Assets/Robot/righthand.obj", "../Assets/Robot/gundam.mtl", 8);
+		righthand.init("../Assets/Robot2/RHand.obj", "../Assets/Robot2/RHand.mtl", 8);
 		
 		allObjs.push_back(&rshouder);
-		rshouder.init("../Assets/Robot/rshouder.obj", "../Assets/Robot/gundam.mtl", 9);
-		
-		allObjs.push_back(&back2);
-		back2.init("../Assets/Robot/back2.obj", "../Assets/Robot/gundam.mtl", 10);
-		
-		allObjs.push_back(&dbody);
-		dbody.init("../Assets/Robot/dbody.obj", "../Assets/Robot/gundam.mtl", 11);
+		rshouder.init("../Assets/Robot2/RShoulder.obj", "../Assets/Robot2/RShoulder.mtl", 9);
 		
 		allObjs.push_back(&uleftleg);
-		uleftleg.init("../Assets/Robot/uleftleg.obj", "../Assets/Robot/gundam.mtl", 12);
+		uleftleg.init("../Assets/Robot2/LUpLeg.obj", "../Assets/Robot2/LUpLeg.mtl", 12);
 		
 		allObjs.push_back(&dleftleg);
-		dleftleg.init("../Assets/Robot/dleftleg.obj", "../Assets/Robot/gundam.mtl", 13);
+		dleftleg.init("../Assets/Robot2/LDownLeg.obj", "../Assets/Robot2/LDownLeg.mtl", 13);
 		
 		allObjs.push_back(&leftfoot);
-		leftfoot.init("../Assets/Robot/leftfoot.obj", "../Assets/Robot/gundam.mtl", 14);
+		leftfoot.init("../Assets/Robot2/LFeet.obj", "../Assets/Robot2/LFeet.mtl", 14);
 		
 		allObjs.push_back(&urightleg);
-		urightleg.init("../Assets/Robot/urightleg.obj", "../Assets/Robot/gundam.mtl", 15);
+		urightleg.init("../Assets/Robot2/RUpLeg.obj", "../Assets/Robot2/RUpLeg.mtl", 15);
 		
 		allObjs.push_back(&drightleg);
-		drightleg.init("../Assets/Robot/drightleg.obj", "../Assets/Robot/gundam.mtl", 16);
+		drightleg.init("../Assets/Robot2/RDownLeg.obj", "../Assets/Robot2/RDownLeg.mtl", 16);
 		
 		allObjs.push_back(&rightfoot);
-		rightfoot.init("../Assets/Robot/rightfoot.obj", "../Assets/Robot/gundam.mtl", 17);
+		rightfoot.init("../Assets/Robot2/RFeet.obj", "../Assets/Robot2/RFeet.mtl", 17);
+
+		allObjs.push_back(&ball);
+		ball.init("../Assets/ball.obj", "../Assets/ball.mtl", 18);
 	}
 	
 	void addRobots() {
 		glm::vec3 offsets[] = {
-			glm::vec3(35.0f, 3.0f, -30.0f),
-			glm::vec3(0.0f, 0.0f, -30.0f),
-			glm::vec3(-35.0f, 3.0f, -30.0f),
-			glm::vec3(-12.0f, 3.0f, -10.0f),
-			glm::vec3(12.0f, 3.0f, -10.0f),
+			//glm::vec3(35.0f, 3.0f, -30.0f),
+			//glm::vec3(0.0f, 0.0f, -30.0f),
+			//glm::vec3(-35.0f, 3.0f, -30.0f),
+			//glm::vec3(-12.0f, 3.0f, -10.0f),
+			//glm::vec3(12.0f, 3.0f, -10.0f),
 			glm::vec3(0.0f, 0.0f, 0.0f)
 		};
 		for (auto offset : offsets) {
@@ -171,157 +157,148 @@ public:
 			Rotatation[i] = glm::mat4(1.0f);
 			Translation[i] = glm::mat4(1.0f);
 		}
-		float r, pitch, yaw, roll;
-		float alpha, beta, gamma;
-
-		if (mode != MODE_RUN) {
-			if (mode != MODE_WAVE) {
-				angles[6] = -angles[1];
-			}
-			angles[7] = angles[2];
-			angles[15] = -angles[12];
-			angles[16] = angles[13];
-		}
+		float r;
 
 		//Body
-		alpha = DOR(angles[0]);
-		beta = DOR(angle);
-		Rotatation[0] = glm::rotate(alpha, glm::vec3(1, 0, 0)) * glm::rotate(beta, glm::vec3(0, 1, 0));
-		Translation[0] = glm::translate(glm::vec3(0, 2.9 + position, 0));
+		Rotatation[0] = glm::rotate(DOR(alpha[0]), glm::vec3(1, 0, 0)) * glm::rotate(DOR(gamma[0]), glm::vec3(0, 0, 1)) * glm::rotate(DOR(beta[0]), glm::vec3(0, 1, 0));
+		Translation[0] = glm::translate(glm::vec3(0, position, 0) + pos[0]);
 		body.setModelMt(&(this->modelMt * Translation[0] * Rotatation[0]));
-		//左手=======================================================
-		//左上手臂
-		yaw = DOR(beta); r = 3.7;
-		alpha = DOR(angles[1]);
-		gamma = DOR(10+ angles[3]);
-		Rotatation[1] = glm::rotate(alpha, glm::vec3(1, 0, 0)) * glm::rotate(gamma, glm::vec3(0, 0, 1));//向前旋轉*向右旋轉
-		Translation[1] = glm::translate(glm::vec3(3.7, 1, -0.5));
-
-		ulefthand.setModelMt(&(body.modelMt * Translation[1] * Rotatation[1]));
 
 		//左肩膀
-		lshouder.setModelMt(&(ulefthand.modelMt));
+		Rotatation[4] = glm::rotate(DOR(alpha[4]), glm::vec3(1, 0, 0)) * glm::rotate(DOR(gamma[4]), glm::vec3(0, 0, 1)) * glm::rotate(DOR(beta[4]), glm::vec3(0, 1, 0));
+		Translation[4] = glm::translate(pos[4]);
+		lshouder.setModelMt(&(body.modelMt * Translation[4] * Rotatation[4] * glm::translate(-pos[4])));
 
 		//左下手臂
-		alpha = DOR(angles[2] - 20);
-		//上手臂+下手臂向前旋轉*向右旋轉
-		Rotatation[2] = glm::rotate(alpha, glm::vec3(1, 0, 0));
-		Translation[2] = glm::translate(glm::vec3(0, -3, 0));
+		r = -8;
+		Rotatation[2] = Rotatation[4] * glm::rotate(DOR(alpha[2]), glm::vec3(1, 0, 0)) * glm::rotate(DOR(gamma[2]), glm::vec3(0, 0, 1)) * glm::rotate(DOR(beta[2]), glm::vec3(0, 1, 0));
+		Translation[2] = Translation[4] * glm::translate(glm::vec3(-r * cos(DOR(alpha[4])) * sin(DOR(gamma[4])), r * cos(DOR(alpha[4])) * cos(DOR(gamma[4])), r * sin(DOR(alpha[4]))));
+		dlefthand.setModelMt(&(body.modelMt * Translation[2] * Rotatation[2] * glm::translate(-pos[2])));
 
-		dlefthand.setModelMt(&(ulefthand.modelMt * Translation[2] * Rotatation[2]));
-
-		pitch = DOR(alpha);
-		roll = DOR(gamma);
-		gamma = DOR(angles[3] * 2);
-		beta = 0;
-		if (mode == MODE_WAVE) {
-			beta = DOR(-90);
-			alpha = DOR(15);
-		}
-		//延x軸位移以上手臂為半徑的圓周長:translate(0,r*cos,r*sin) ,角度為上手臂+下手臂
-		Rotatation[3] = glm::rotate(alpha, glm::vec3(1, 0, 0)) * glm::rotate(gamma, glm::vec3(0, 0, 1)) * glm::rotate(beta, glm::vec3(0, 1, 0));
-		Translation[3] = glm::translate(glm::vec3(0, -4.8, 0));
-		lefthand.setModelMt(&(dlefthand.modelMt * Translation[3] * Rotatation[3]));
+		r = -9.5;
+		Rotatation[3] = Rotatation[2] * glm::rotate(DOR(alpha[3]), glm::vec3(1, 0, 0)) * glm::rotate(DOR(gamma[3]), glm::vec3(0, 0, 1)) * glm::rotate(DOR(beta[3]), glm::vec3(0, 1, 0));
+		Translation[3] = Translation[2] * glm::translate(glm::vec3(-r * cos(DOR(alpha[2] + alpha[4])) * sin(DOR(gamma[2] + gamma[4])), r * cos(DOR(alpha[2] + alpha[4])) * cos(DOR(gamma[2] + gamma[4])), r * sin(DOR(alpha[2] + alpha[4]))));
+		lefthand.setModelMt(&(body.modelMt * Translation[3] * Rotatation[3] * glm::translate(-pos[3])));
 
 		//============================================================
 		//頭==========================================================
-		Translation[5] = glm::translate(glm::vec3(0, 3.9, -0.5));
-		head.setModelMt(&(body.modelMt * Translation[5]));
+		Rotatation[5] = glm::rotate(DOR(alpha[5]), glm::vec3(1, 0, 0)) * glm::rotate(DOR(gamma[5]), glm::vec3(0, 0, 1)) * glm::rotate(DOR(beta[5]), glm::vec3(0, 1, 0));
+		Translation[5] = glm::translate(pos[5]);
+		head.setModelMt(&(body.modelMt * Translation[5] * Rotatation[5] * glm::translate(-pos[5])));
 		//============================================================
 		//右手=========================================================
-		gamma = DOR(-10); 
-		alpha = DOR(angles[6]);
-		Rotatation[6] = glm::rotate(alpha, glm::vec3(1, 0, 0)) * glm::rotate(gamma, glm::vec3(0, 0, 1));
-		Translation[6] = glm::translate(glm::vec3(-3.9, 1.7, -0.2));
-		urighthand.setModelMt(&(body.modelMt * Translation[6] * Rotatation[6]));
+		Rotatation[9] = glm::rotate(DOR(alpha[9]), glm::vec3(1, 0, 0)) * glm::rotate(DOR(gamma[9]), glm::vec3(0, 0, 1)) * glm::rotate(DOR(beta[9]), glm::vec3(0, 1, 0));
+		Translation[9] = glm::translate(pos[9]);
+		rshouder.setModelMt(&(body.modelMt * Translation[9] * Rotatation[9] * glm::translate(-pos[9])));
 
-		rshouder.setModelMt(&(urighthand.modelMt));
+		r = -8;
+		Rotatation[7] = Rotatation[9] * glm::rotate(DOR(alpha[7]), glm::vec3(1, 0, 0)) * glm::rotate(DOR(gamma[7]), glm::vec3(0, 0, 1)) * glm::rotate(DOR(beta[7]), glm::vec3(0, 1, 0));
+		Translation[7] = Translation[9] * glm::translate(glm::vec3(-r * cos(DOR(alpha[9])) * sin(DOR(gamma[9])), r * cos(DOR(alpha[9])) * cos(DOR(gamma[9])), r * sin(DOR(alpha[9]))));
+		drighthand.setModelMt(&(body.modelMt * Translation[7] * Rotatation[7] * glm::translate(-pos[7])));
 
-		alpha = DOR(angles[7] - 20);
-		Rotatation[7] = glm::rotate(alpha, glm::vec3(1, 0, 0));
-		Translation[7] = glm::translate(glm::vec3(0, -3, 0));
-		drighthand.setModelMt(&(urighthand.modelMt * Translation[7] * Rotatation[7]));
-
-		pitch = (alpha);
-		roll = (gamma);
-		Translation[8] = glm::translate(glm::vec3(0, -6, 0));
-		righthand.setModelMt(&(drighthand.modelMt * Translation[8]));
-		//=============================================================
-		//back&DBody===================================================
-		Translation[10] = translate(glm::vec3(0, 2, -4.5));
-		back2.setModelMt(&(body.modelMt * Translation[10]));
-
-		Translation[11] = translate(glm::vec3(0, -5.3, 0));
-		dbody.setModelMt(&(body.modelMt * Translation[11]));
+		r = -9.5;
+		Rotatation[8] = Rotatation[7] * glm::rotate(DOR(alpha[8]), glm::vec3(1, 0, 0)) * glm::rotate(DOR(gamma[8]), glm::vec3(0, 0, 1)) * glm::rotate(DOR(beta[8]), glm::vec3(0, 1, 0));
+		Translation[8] = Translation[7] * glm::translate(glm::vec3(-r * cos(DOR(alpha[7] + alpha[9])) * sin(DOR(gamma[7] + gamma[9])), r * cos(DOR(alpha[7] + alpha[9])) * cos(DOR(gamma[7] + gamma[9])), r * sin(DOR(alpha[7] + alpha[9]))));
+		righthand.setModelMt(&(body.modelMt * Translation[8] * Rotatation[8] * glm::translate(-pos[8])));
 		//=============================================================
 		//左腳
-		alpha = DOR(angles[12]); gamma = DOR(10);
-		Rotatation[12] = glm::rotate(alpha, glm::vec3(1, 0, 0)) * glm::rotate(gamma, glm::vec3(0, 0, 1));
-		Translation[12] = glm::translate(glm::vec3(1.8, -4.5, 0));
-		uleftleg.setModelMt(&(this->modelMt * Translation[12] * Rotatation[12]));
+		r = -10;
+		Rotatation[12] = glm::rotate(DOR(alpha[12]), glm::vec3(1, 0, 0)) * glm::rotate(DOR(gamma[12]), glm::vec3(0, 0, 1)) * glm::rotate(DOR(beta[12]), glm::vec3(0, 1, 0));
+		Translation[12] = glm::translate(pos[12]);
+		uleftleg.setModelMt(&(this->modelMt * Translation[12] * Rotatation[12] * glm::translate(-pos[12])));
 
-		pitch = (alpha); r = -7;
-		roll = (gamma);
-		alpha = DOR(angles[13] + angles[12]);
-		Translation[13] = glm::translate(glm::vec3(-r * sin(roll), r * cos(pitch), r * sin(pitch))) * Translation[12];
-		Rotatation[13] = glm::rotate(alpha, glm::vec3(1, 0, 0));
-		dleftleg.setModelMt(&(this->modelMt * Translation[13] * Rotatation[13]));
+		Rotatation[13] = Rotatation[12] * glm::rotate(DOR(alpha[13]), glm::vec3(1, 0, 0)) * glm::rotate(DOR(gamma[13]), glm::vec3(0, 0, 1)) * glm::rotate(DOR(beta[13]), glm::vec3(0, 1, 0));
+		Translation[13] = Translation[12] * glm::translate(glm::vec3(-r * cos(DOR(alpha[12])) * sin(DOR(gamma[12])), r * cos(DOR(alpha[12])) * cos(DOR(gamma[12])), r * sin(DOR(alpha[12])))) ;
+		dleftleg.setModelMt(&(this->modelMt * Translation[13] * Rotatation[13] * glm::translate(-pos[13])));
 
-		pitch = (alpha); r = -5;
-		roll = (gamma);
-		Translation[14] = glm::translate(glm::vec3(-(r + 2) * sin(roll), r * cos(pitch), r * sin(pitch) - 1)) * Translation[13];
-		Rotatation[14] = glm::rotate(alpha, glm::vec3(1, 0, 0));
-		leftfoot.setModelMt(&(this->modelMt * Translation[14] * Rotatation[14]));
+		Rotatation[14] = Rotatation[13] * glm::rotate(DOR(alpha[14]), glm::vec3(1, 0, 0)) * glm::rotate(DOR(gamma[14]), glm::vec3(0, 0, 1)) * glm::rotate(DOR(beta[14]), glm::vec3(0, 1, 0));
+		Translation[14] = Translation[13] * glm::translate(glm::vec3(-r * cos(DOR(alpha[13] + alpha[12])) * sin(DOR(gamma[13] + gamma[12])), r * cos(DOR(alpha[13] + alpha[12])) * cos(DOR(gamma[13] + gamma[12])), r * sin(DOR(alpha[13] + alpha[12]))));
+		leftfoot.setModelMt(&(this->modelMt * Translation[14] * Rotatation[14] * glm::translate(-pos[14])));
 		//=============================================================
-		//右腳
-		alpha = DOR(angles[15]);
-		gamma = DOR(-10);
-		Rotatation[15] = glm::rotate(alpha, glm::vec3(1, 0, 0)) * glm::rotate(gamma, glm::vec3(0, 0, 1));
-		Translation[15] = glm::translate(glm::vec3(-1.8, -4.5, 0));
-		urightleg.setModelMt(&(this->modelMt* Translation[15] * Rotatation[15]));
+		////右腳
+		Rotatation[15] = glm::rotate(DOR(alpha[15]), glm::vec3(1, 0, 0)) * glm::rotate(DOR(gamma[15]), glm::vec3(0, 0, 1)) * glm::rotate(DOR(beta[15]), glm::vec3(0, 1, 0));
+		Translation[15] = glm::translate(pos[15]);
+		urightleg.setModelMt(&(this->modelMt * Translation[15] * Rotatation[15] * glm::translate(-pos[15])));
 
-		pitch = (alpha); r = -7;
-		roll = (gamma);
-		alpha = DOR(angles[16] + angles[15]);
-		Rotatation[16] = glm::rotate(alpha, glm::vec3(1, 0, 0));
-		Translation[16] = glm::translate(glm::vec3(-r * sin(roll), r * cos(pitch), r * sin(pitch))) * Translation[15];
-		drightleg.setModelMt(&(this->modelMt* Translation[16] * Rotatation[16]));
+		Rotatation[16] = Rotatation[15] * glm::rotate(DOR(alpha[16]), glm::vec3(1, 0, 0)) * glm::rotate(DOR(gamma[16]), glm::vec3(0, 0, 1)) * glm::rotate(DOR(beta[16]), glm::vec3(0, 1, 0));
+		Translation[16] = Translation[15] * glm::translate(glm::vec3(-r * cos(DOR(alpha[15])) * sin(DOR(gamma[15])), r * cos(DOR(alpha[15])) * cos(DOR(gamma[15])), r * sin(DOR(alpha[15]))));
+		drightleg.setModelMt(&(this->modelMt * Translation[16] * Rotatation[16] * glm::translate(-pos[16])));
 
-		pitch = (alpha); r = -5;
-		roll = (gamma);
-		alpha = (angles[16] + angles[15] > 75) ? DOR(75) : alpha;
-		Translation[17] = glm::translate(glm::vec3(-(r + 2) * sin(roll), r * cos(pitch), r * sin(pitch) - 0.5)) * Translation[16];
-		Rotatation[17] = glm::rotate(alpha, glm::vec3(1, 0, 0));
-		rightfoot.setModelMt(&(this->modelMt* Translation[17] * Rotatation[17]));
+		Rotatation[17] = Rotatation[16] * glm::rotate(DOR(alpha[17]), glm::vec3(1, 0, 0)) * glm::rotate(DOR(gamma[17]), glm::vec3(0, 0, 1)) * glm::rotate(DOR(beta[17]), glm::vec3(0, 1, 0));
+		Translation[17] = Translation[16] * glm::translate(glm::vec3(-r * cos(DOR(alpha[16] + alpha[15])) * sin(DOR(gamma[16] + gamma[15])), r * cos(DOR(alpha[16] + alpha[15])) * cos(DOR(gamma[16] + gamma[15])), r * sin(DOR(alpha[16] + alpha[15]))));
+		rightfoot.setModelMt(&(this->modelMt * Translation[17] * Rotatation[17] * glm::translate(-pos[17])));
+		ball.setModelMt(&(this->modelMt * glm::scale(glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f) * 20.0f)));
 		//=============================================================
 	}
-
+	int index = 14;
 	void keyUpdate(unsigned char key, int x, int y) {
 		switch (key) {
 		case '1':
 			angle += 5;
 			if (angle >= 360) angle = 0;
-			printf("beta:%f\n", angle);
 			break;
 		case '2':
 			angle -= 5;
 			if (angle <= 0) angle = 360;
-			printf("beta:%f\n", angle);
 			break;
 		
 		case 'r':
-			angles[1] -= 5;
-			if (angles[1] == -360) angles[1] = 0;
+			alpha[4] -= 5;
+			if (alpha[4] == -360) alpha[4] = 0;
 			break;
 		case 't':
-			angles[2] -= 5;
-			if (angles[2] == -360) angles[2] = 0;
+			alpha[2] -= 5;
+			if (alpha[2] == -360) alpha[2] = 0;
 			break;
 		case 'q':
 			break;
 		case 'e':
 			break;
+		case 'j':
+			pos[index].x -= 0.3;
+			break;
+		case 'l':
+			pos[index].x += 0.3;
+			break;
+		case 'i':
+			pos[index].y += 0.3;
+			break;
+		case 'k':
+			pos[index].y -= 0.3;
+			break;
+		case 'p':
+			pos[index].z += 0.3;
+			break;
+		case ';':
+			pos[index].z -= 0.3;
+			break;
+		case 'y':
+			index++;
+			break;
+		case 'h':
+			index--;
+			break;
+		case '.':
+			alpha[index] += 5;
+			break;
+		case '/':
+			alpha[index] -= 5;
+			break;
+		case 'm':
+			beta[index] += 5;
+			break;
+		case ',':
+			beta[index] -= 5;
+			break;
+		case 'b':
+			gamma[index] += 5;
+			break;
+		case 'n':
+			gamma[index] -= 5;
+			break;
 		}
+		std::cout << index << ":" << pos[index].x << ", " << pos[index].y << ", " << pos[index].z << std::endl;
+		std::cout << index << ":" << alpha[index] << ", " << beta[index] << ", " << gamma[index] << std::endl;
 		glutPostRedisplay();
 	}
 
@@ -335,60 +312,90 @@ public:
 
 	void updateIdleFrame() {
 		if (frame++) {
-			for (int i = 0; i < PARTSNUM; i++) {
-				angles[i] = 0;
-			}
-			position = 0;
+			reset();
 		}
 	}
 
+	void reset() {
+		for (int i = 0; i < PARTSNUM; i++) {
+			alpha[i] = 0;
+			beta[i] = 0;
+			gamma[i] = 0;
+			pos[i].x = pos[i].y = pos[i].z = 0;
+		}
+		position = 0;
+		angle = 0;
+		pos[2] = glm::vec3(20, -2, 0);
+		pos[3] = glm::vec3(20, -11.5, 0);
+		pos[4] = glm::vec3(20, 6, 0);
+		pos[7] = glm::vec3(-20, -2, 0);
+		pos[8] = glm::vec3(-20, -11.5, 0);
+		pos[9] = glm::vec3(-20, 6, 0);
+		pos[12] = glm::vec3(5.4, -18, 0);
+		pos[13] = glm::vec3(5.4, -28, 0);
+		pos[14] = glm::vec3(5.4, -37.3, 0);
+		pos[15] = glm::vec3(-5.4, -18, 0);
+		pos[16] = glm::vec3(-5.4, -28, 0);
+		pos[17] = glm::vec3(-5.4, -37.3, 0);
+
+		alpha[2] = -20;
+		alpha[7] = -20;
+		gamma[12] = 10;
+		gamma[15] = -10;
+	}
+
 	void updateWalkFrame() {
-		int speed = 6;
+		int speed = 10;
 		if (frame >= 13 * speed) {
 			frame  = speed;
 		}
 		if (frame++ % speed) return;
 		switch (frame / speed) {
 		case 0:
-			for (int i = 0; i < PARTSNUM; i++) {
-				angles[i] = 0;
-			}
-			angles[2] = -45;
-			angles[13] = 45;
+			reset();
+			alpha[2] = -45;
+			alpha[13] = 45;
 			break;
 		case 1:
 		case 2:
 		case 3:
-			angles[1] += 10;
-			angles[12] -= 15;
-			angles[13] = 0;
+			alpha[4] += 10;
+			alpha[12] -= 15;
+			alpha[13] = 0;
 			position += 0.1;
 			break;
 		case 4:
 		case 5:
 		case 6:
-			angles[1] -= 10;
-			angles[12] += 15;
-			angles[13] -= 15;
+			alpha[4] -= 10;
+			alpha[12] += 15;
+			alpha[13] -= 15;
 			position -= 0.1;
 			break;
 		case 7:
 		case 8:
 		case 9:
-			angles[1] -= 10;
-			angles[12] += 15;
-			angles[13] = 0;
+			alpha[4] -= 10;
+			alpha[12] += 15;
+			alpha[13] = 0;
 			position += 0.1;
 			break;
 		case 10:
 		case 11:
 		case 12:
-			angles[1] += 10;
-			angles[12] -= 15;
-			angles[13] += 15;
+			alpha[4] += 10;
+			alpha[12] -= 15;
+			alpha[13] += 15;
 			position -= 0.1;
 			break;
 		}
+		alpha[9] = -alpha[4];
+		alpha[7] = alpha[2];
+		alpha[15] = -alpha[12];
+		alpha[16] = alpha[13];
+
+		// gamma[4] = 10 + gamma[3];
+		// gamma[9] = -10 + gamma[8];
 	}
 	
 	void updateWaveFrame() {
@@ -399,79 +406,28 @@ public:
 		if (frame++ % speed) return;
 		switch (frame / speed) {
 		case 0:
-
-			for (int i = 0; i < PARTSNUM; i++) {
-				angles[i] = 0;
-			}
-			angles[1] = 200;
-			angles[3] -= 15;
+			reset();
+			beta[3] = beta[8] = DOR(-90);
+			alpha[8] = DOR(15);
+			alpha[8] = DOR(-15);
+			alpha[4] = 200;
+			alpha[8] = 200;
+			gamma[3] -= 45;
 			break;
 		case 1:
 		case 2:
 		case 3:
-			angles[3] += 10;
+			gamma[3] += 10;
 			break;
 		case 4:
 		case 5:
 		case 6:
-			angles[3] -= 10;
+			gamma[3] -= 10;
 			break;
 		}
+		gamma[7] = gamma[3];
 	}
 
-	void updateRunFrame() {
-		int speed = 4;
-		if (frame >= 13 * speed) {
-			frame = speed;
-		}
-		if (frame++ % speed) return;
-		switch (frame / speed) {
-		case 0:
-			for (int i = 0; i < PARTSNUM; i++) {
-				angles[i] = 0;
-			}
-			break;
-		case 1:
-		case 2:
-		case 3:
-			angles[13] -= 15;
-			break;
-		case 4:
-		case 5:
-		case 6:
-			angles[12] += 5;
-			angles[13] -= 5;
-
-			angles[12] -= 10;
-			angles[13] += 15;
-			angles[15] -= 5;
-			angles[16] += 5;
-			position -= 0.5;
-
-			angles[1] -= 15;
-			angles[12] -= 5;
-			angles[13] -= 5;
-			angles[15] -= 5;
-			angles[16] += 5;
-			position -= 0.5;
-			break;
-		case 7:
-		case 8:
-		case 9:
-			angles[1] -= 15;
-			angles[12] += 15;
-			angles[13] += 35;
-			position += 0.5;
-			break;
-		case 10:
-		case 11:
-		case 12:
-			angles[1] += 15;
-			angles[12] -= 15;
-			position -= 0.5;
-			break;
-		}
-	}
 	void draw() {
 		for (std::vector<MyObject*>::iterator iter = allObjs.begin();
 			iter != allObjs.end();
