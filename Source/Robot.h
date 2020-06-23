@@ -12,6 +12,7 @@ public:
 	static const int MODE_RUN;
 	static const int MODE_WAVE;
 	static const int MODE_DANCE;
+	static const int MODE_JUMP;
 
 
 protected:
@@ -156,6 +157,9 @@ public:
 		}
 		else if (mode == MODE_DANCE) {
 			updateDanceFrame();
+		}
+		else if (mode == MODE_JUMP) {
+			updateJumpFrame();
 		}
 		glm::mat4 Rotatation[PARTSNUM];
 		glm::mat4 Translation[PARTSNUM];
@@ -446,7 +450,6 @@ public:
 
 			break;
 		case 1:
-			position += 10;
 			alpha[5] -= 5;
 			alpha[4] = 185;
 			alpha[9] = 185;
@@ -544,6 +547,103 @@ public:
 		// gamma[4] = 10 + gamma[3];
 		// gamma[9] = -10 + gamma[8];
 	}
+
+	void updateJumpFrame() {
+		int speed = 10;
+		if (frame >= 13 * speed) {
+			frame = speed;
+		}
+		if (frame++ % speed) return;
+		switch (frame / speed) {
+		case 0:
+			reset();
+
+			break;
+		case 1:
+			gamma[12] += 10; 
+			gamma[15] -= 10;
+			position += 1;
+			alpha[4] -= 20;
+			break;
+		case 2:
+			gamma[12] += 10; 
+			gamma[15] -= 10;
+			position += 1;
+			alpha[4] -= 20;
+
+			break;
+		case 3:
+			gamma[12] += 10;
+			gamma[15] -= 10;
+			position += 1;
+			alpha[4] -= 20;
+
+			break;
+		case 4:
+			gamma[12] += 10; 
+			gamma[15] -= 10;
+			position += 1;
+			alpha[4] -= 20;
+
+			break;
+		case 5:
+			gamma[12] += 10; 
+			gamma[15] -= 10;
+			position += 1;
+			alpha[4] -= 20;
+
+			break;
+		case 6:
+			gamma[12] -= 10;
+			gamma[15] += 10;
+			position -= 1;
+			alpha[4] += 20;
+
+			break;
+		case 7:
+			gamma[12] -= 10;
+			gamma[15] += 10;
+			position -= 1;
+			alpha[4] += 20;
+
+
+			break;
+		case 8:
+			gamma[12] -= 10;
+			gamma[15] += 10;
+			position -= 1;
+			alpha[4] += 20;
+
+
+			break;
+		case 9:
+			gamma[12] -= 10; 
+			gamma[15] += 10;
+			position -= 1;
+			alpha[4] += 20;
+
+
+			break;
+		case 10:
+			gamma[12] -= 10;
+			gamma[15] += 10;
+			position -= 1;
+			alpha[4] += 20;
+
+
+			break;
+		case 11:
+
+
+			break;
+		case 12:
+
+
+			break;
+		}
+		alpha[9] = alpha[4];
+
+	}
 	void draw() {
 		for (std::vector<MyObject*>::iterator iter = allObjs.begin();
 			iter != allObjs.end();
@@ -569,4 +669,6 @@ const int Robot::MODE_IDLE = 0;
 const int Robot::MODE_RUN = 2;
 const int Robot::MODE_WAVE = 3;
 const int Robot::MODE_DANCE = 4;
+const int Robot::MODE_JUMP = 5;
+
 #endif
