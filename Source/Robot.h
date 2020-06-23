@@ -26,7 +26,6 @@ protected:
 	MyObject urightleg;
 	MyObject drightleg;
 	MyObject rightfoot;
-	MyObject ball;
 	std::vector<MyObject*> allObjs;
 	glm::mat4x4 modelMt;
 	std::vector<glm::mat4x4> stackMat;
@@ -58,7 +57,6 @@ public:
 		urightleg(shader, MyObject::DRAW_TYPE_INSTANCE),
 		drightleg(shader, MyObject::DRAW_TYPE_INSTANCE),
 		rightfoot(shader, MyObject::DRAW_TYPE_INSTANCE),
-		ball(shader, MyObject::DRAW_TYPE_INSTANCE),
 		frame(0),
 		mode(MODE_WALK)
 	{
@@ -110,8 +108,6 @@ public:
 		allObjs.push_back(&rightfoot);
 		rightfoot.init("../Assets/Robot2/RFeet.obj", "../Assets/Robot2/RFeet.mtl", 17);
 
-		allObjs.push_back(&ball);
-		ball.init("../Assets/ball.obj", "../Assets/ball.mtl", 18);
 	}
 	
 	void addRobots() {
@@ -227,7 +223,6 @@ public:
 		Rotatation[17] = Rotatation[16] * glm::rotate(DOR(alpha[17]), glm::vec3(1, 0, 0)) * glm::rotate(DOR(gamma[17]), glm::vec3(0, 0, 1)) * glm::rotate(DOR(beta[17]), glm::vec3(0, 1, 0));
 		Translation[17] = Translation[16] * glm::translate(glm::vec3(-r * cos(DOR(alpha[16] + alpha[15])) * sin(DOR(gamma[16] + gamma[15])), r * cos(DOR(alpha[16] + alpha[15])) * cos(DOR(gamma[16] + gamma[15])), r * sin(DOR(alpha[16] + alpha[15]))));
 		rightfoot.setModelMt(&(this->modelMt * Translation[17] * Rotatation[17] * glm::translate(-pos[17])));
-		ball.setModelMt(&(this->modelMt * glm::scale(glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f) * 20.0f)));
 		//=============================================================
 	}
 	int index = 14;
@@ -407,9 +402,9 @@ public:
 		switch (frame / speed) {
 		case 0:
 			reset();
-			beta[3] = beta[8] = DOR(-90);
+			/*beta[3] = beta[8] = DOR(-90);
 			alpha[8] = DOR(15);
-			alpha[8] = DOR(-15);
+			alpha[8] = DOR(-15);*/
 			alpha[4] = 200;
 			alpha[8] = 200;
 			gamma[3] -= 45;
