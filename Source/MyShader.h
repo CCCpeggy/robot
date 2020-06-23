@@ -62,8 +62,8 @@ public:
 		glUniform1i(locMode, mode);
 	}
 
-	void setTime(float time) {
-		glUniform1f(locTime, time);
+	void setTime(long int time) {
+		glUniform1i(locTime, time % 100000000);
 	}
 
 	void use() {

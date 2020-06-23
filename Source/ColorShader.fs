@@ -2,7 +2,7 @@
 
 uniform sampler2D tex;                                                         
 uniform int Mode;
-uniform float Time;
+uniform int Time;
 
 out vec4 color;                                                                
 
@@ -78,7 +78,7 @@ void main(void)
         if (texture_color.a < 1) {
             vec2 coord = fs_in.texcoord * 2 - vec2(1, 1);
             float distance = sqrt(coord.x * coord.x + coord.y * coord.y);
-            if (distance > 0.5 && (int(abs(distance + Time) * 6)) % 2 == 0) {
+            if (/*distance > 0.5 &&*/  (int(abs((distance * 6 + Time * 0.0001)  ))) % 2 == 0) {
                 color.xyz = mColor;
             }
             else {

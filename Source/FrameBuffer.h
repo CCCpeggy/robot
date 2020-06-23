@@ -86,7 +86,7 @@ public:
 		glBindVertexArray(window_vao);
 		grayShader->use();
 		grayShader->setMode(mode);
-		grayShader->setTime(time(NULL));
+		grayShader->setTime(clock());
 		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 	}
 
