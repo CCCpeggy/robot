@@ -1,6 +1,6 @@
 #version 430 core                                                              
 
-uniform sampler2D tex;                                                         
+uniform sampler2D tex;
 uniform int Mode;
 uniform int Time;
 
@@ -9,13 +9,18 @@ out vec4 color;
 in VS_OUT                                                                      
 {                                                                              
 vec2 texcoord;                                                             
-} fs_in;                                                                       
+} fs_in;        
+
+float ripple(float dis,float scale,float width,float num,float speed){
+    return width*(sin(dis*2.*3.14*num-Time* 0.0001*speed)/(1./scale*dis*2.*3.14*num));
+}
 
 void main(void)                                                                
 {                                                                              
 	vec4 texture_color = texture(tex, fs_in.texcoord);
 	if (Mode == 0) {
 		color = texture_color;
+
 	}
 	else if (Mode == 1) {
 		float grayscale_color = 0.299*texture_color.r + 0.587*texture_color.g + 0.114*texture_color.b;
@@ -76,11 +81,18 @@ void main(void)
         color = texture_color;
         vec3 mColor = vec3(1, 1, 1);
 
-        vec2 coord = fs_in.texcoord * 2 - vec2(1, 1);
-        float distance = sqrt(coord.x * coord.x + coord.y * coord.y);
-        if (distance > 0.5+ Time * 0.0001 && distance< 0.8+ Time * 0.0001 && (int(abs((distance * 30 - Time * 0.0001)  ))) % 2 == 0) {
-            color.xyz = mColor;
-            color.w = 1;
+        vec2 uv = fs_in.texcoord;
+        vec2 center=vec2(0.5,0.5);
+        float dis=distance(uv, center) - Time * 0.0001;
+
+        if (dis > 0 && dis< 0.3) {
+            float value=ripple(dis,5.,1.6,20.,3.);
+            value+=ripple(distance(uv,center-0.2),2.,1.,5.,5.);
+            value+=ripple(distance(uv,center+vec2(0.35, 0)),2.,0.5,5.,5.);
+
+            if (value > 0.3) {
+                color = vec4(1,1,1,1);
+            }
         }
     }
     else if (Mode == 6) {

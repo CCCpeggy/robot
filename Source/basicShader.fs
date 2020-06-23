@@ -20,7 +20,7 @@ float Shininess = 150.0;//for material specular
 void main(void)
 { 
     // Dot product gives us diffuse intensity
-    float diff = max(0.0, dot(normalize(vVaryingNormal), normalize(vVaryingLightDir)));
+    /*float diff = max(0.0, dot(normalize(vVaryingNormal), normalize(vVaryingLightDir)));
 
     // Multiply intensity by diffuse color, force alpha to 1.0
     vFragColor = diff * diffuseColor * vec4(Kd, 1);
@@ -35,7 +35,7 @@ void main(void)
     if(diff != 0) {
         spec = pow(spec, Shininess);
         vFragColor += specularColor * spec * 0.2;
-    }
+    }*/
     /*
     vec4 color1;
     color1.rgb = Kd;
@@ -51,5 +51,8 @@ void main(void)
     else                       color2 = vec4(0.2, 0.2, 0.2, 1.0);
 
     vFragColor = color1 * color2;*/
+
+    vFragColor.xyz = vVaryingNormal;
+    vFragColor.w = 1;
 }
     
