@@ -11,6 +11,9 @@ public:
 	static const int MODE_IDLE;
 	static const int MODE_RUN;
 	static const int MODE_WAVE;
+	static const int MODE_DANCE;
+
+
 protected:
 	MyObject body;
 	MyObject dlefthand;
@@ -150,6 +153,9 @@ public:
 		}
 		else if (mode == MODE_WAVE) {
 			updateWaveFrame();
+		}
+		else if (mode == MODE_DANCE) {
+			updateDanceFrame();
 		}
 		glm::mat4 Rotatation[PARTSNUM];
 		glm::mat4 Translation[PARTSNUM];
@@ -428,6 +434,116 @@ public:
 		gamma[7] = gamma[3];
 	}
 
+	void updateDanceFrame() {
+		int speed = 10;
+		if (frame >= 13 * speed) {
+			frame = speed;
+		}
+		if (frame++ % speed) return;
+		switch (frame / speed) {
+		case 0:
+			reset();
+
+			break;
+		case 1:
+			position += 10;
+			alpha[5] -= 5;
+			alpha[4] = 185;
+			alpha[9] = 185;
+			gamma[12] = 45;
+			break;
+		case 2:
+			alpha[5] -= 5;
+			alpha[4] += 10;
+			alpha[9] -= 10;
+			alpha[12] += 5;
+			alpha[13] += 5;
+			break;
+		case 3:
+			alpha[5] -= 5;
+			alpha[4] += 10;
+			alpha[9] -= 10;
+			alpha[12] += 5;
+			alpha[13] += 5;
+
+			break;
+		case 4:
+			alpha[5] += 5;
+			alpha[4] -= 10;
+			alpha[9] += 10;
+			alpha[12] += 5;
+			alpha[13] += 5;
+
+			break;
+		case 5:
+			alpha[5] += 5;
+			alpha[4] -= 10;
+			alpha[9] += 10;
+			alpha[12] += 5;
+			alpha[13] += 5;
+
+			break;
+		case 6:
+			alpha[5] += 5;
+			alpha[4] -= 10;
+			alpha[9] += 10;
+			alpha[12] += 5;
+			alpha[13] += 5;
+
+			break;
+		case 7:
+			alpha[5] += 5;
+			alpha[4] -= 10;
+			alpha[9] += 10;
+			alpha[12] -= 5;
+			alpha[13] -= 5;
+
+			break;
+		case 8:
+			alpha[5] += 5;
+			alpha[4] += 10;
+			alpha[9] -= 10;
+			alpha[12] -= 5;
+			alpha[13] -= 5;
+
+			break;
+		case 9:
+			alpha[5] += 5;
+			alpha[4] += 10;
+			alpha[9] -= 10;
+			alpha[12] -= 5;
+			alpha[13] -= 5;
+
+			break;
+		case 10:
+			alpha[5] -= 5;
+			alpha[4] += 10;
+			alpha[9] -= 10;
+			alpha[12] -= 5;
+			alpha[13] -= 5;
+
+			break;
+		case 11:
+			alpha[5] -= 5;
+			alpha[4] += 10;
+			alpha[9] -= 10;
+			alpha[12] -= 5;
+			alpha[13] -= 5;
+
+			break;
+		case 12:
+			alpha[5] -= 5;
+			alpha[4] -= 10;
+			alpha[9] += 10;
+			alpha[12] -= 5;
+			alpha[13] -= 5;
+
+			break;
+		}
+
+		// gamma[4] = 10 + gamma[3];
+		// gamma[9] = -10 + gamma[8];
+	}
 	void draw() {
 		for (std::vector<MyObject*>::iterator iter = allObjs.begin();
 			iter != allObjs.end();
@@ -452,4 +568,5 @@ const int Robot::MODE_WALK = 1;
 const int Robot::MODE_IDLE = 0;
 const int Robot::MODE_RUN = 2;
 const int Robot::MODE_WAVE = 3;
+const int Robot::MODE_DANCE = 4;
 #endif
