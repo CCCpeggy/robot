@@ -13,6 +13,7 @@ protected:
 	GLuint locKd;
 	GLuint locKa;
 	GLuint locMode;
+	GLuint locMode2;
 	GLuint locTime;
 
 public:
@@ -45,6 +46,7 @@ public:
 		locKd = glGetUniformLocation(program, "Kd");
 		locKa = glGetUniformLocation(program, "Ka");
 		locMode = glGetUniformLocation(program, "Mode");
+		locMode2 = glGetUniformLocation(program, "Mode2");
 		locTime = glGetUniformLocation(program, "Time");
 		glUseProgram(NULL);
 	}
@@ -60,6 +62,10 @@ public:
 
 	void setMode(int mode) {
 		glUniform1i(locMode, mode);
+	}
+
+	void setMode2(int mode) {
+		glUniform1i(locMode2, mode);
 	}
 
 	void setTime(long int time) {

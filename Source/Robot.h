@@ -41,6 +41,7 @@ protected:
 	glm::vec3 pos[PARTSNUM];
 	float position;
 	float angle;
+	MyShader* shader;
 
 private:
 	int frame;
@@ -48,6 +49,7 @@ private:
 
 public:
 	Robot(MyShader* shader = nullptr):
+		shader(shader),
 		body(shader, MyObject::DRAW_TYPE_INSTANCE),
 		dlefthand(shader, MyObject::DRAW_TYPE_INSTANCE),
 		lefthand(shader, MyObject::DRAW_TYPE_INSTANCE),
@@ -116,6 +118,8 @@ public:
 
 		allObjs.push_back(&ball);
 		ball.init("../Assets/ball.obj", "../Assets/ball.mtl", 18);
+
+		setShaderType(1);
 	}
 	
 	void addRobots() {
@@ -661,6 +665,11 @@ public:
 			) {
 			(*iter)->setDrawType(drawType);
 		}
+	}
+
+	void setShaderType(int type) {
+		shader->use();
+		shader->setMode(type);
 	}
 };
 

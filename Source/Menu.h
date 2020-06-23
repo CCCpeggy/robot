@@ -22,8 +22,12 @@ namespace Menu{
 		mainFBO.switchMode(mode);
 	}
 
+	void RobotModeMenuEvents(int mode) {
+		robot->setShaderType(mode);
+	}
+
 	void create() {
-		int ActionMenu, ModeMenu, ShaderMenu, DrawTypeMenu;
+		int ActionMenu, ModeMenu, FBOShaderMenu, RobotShaderMenu, DrawTypeMenu;
 
 		ActionMenu = glutCreateMenu(ActionMenuEvents);//建立右鍵菜單
 		//加入右鍵物件
@@ -46,7 +50,7 @@ namespace Menu{
 		glutAddMenuEntry("a lot of robots", MyObject::DRAW_TYPE_INSTANCE);
 		glutAttachMenu(GLUT_RIGHT_BUTTON);	//與右鍵關聯
 
-		ShaderMenu = glutCreateMenu(ShaderModeMenuEvents);//建立右鍵菜單
+		FBOShaderMenu = glutCreateMenu(ShaderModeMenuEvents);//建立右鍵菜單
 		//加入右鍵物件
 		glutAddMenuEntry("normal", FrameBuffer::SHADER_MODE_NORMAL);
 		glutAddMenuEntry("gray", FrameBuffer::SHADER_MODE_GRAY);
@@ -58,11 +62,20 @@ namespace Menu{
 
 		glutAttachMenu(GLUT_RIGHT_BUTTON);	//與右鍵關聯
 
+		RobotShaderMenu = glutCreateMenu(RobotModeMenuEvents);//建立右鍵菜單
+		//加入右鍵物件
+		glutAddMenuEntry("mtl", 1);
+		glutAddMenuEntry("cartoon", 2);
+		glutAddMenuEntry("normal map", 3);
+
+		glutAttachMenu(GLUT_RIGHT_BUTTON);	//與右鍵關聯
+
 		glutCreateMenu(nullptr);//建立右鍵菜單
 		//加入右鍵物件
 		glutAddSubMenu("action", ActionMenu);
 		glutAddSubMenu("draw type", DrawTypeMenu);
-		glutAddSubMenu("shader mode", ShaderMenu);
+		glutAddSubMenu("fbo shader mode", FBOShaderMenu);
+		glutAddSubMenu("robot shader mode", RobotShaderMenu);
 		// glutAddSubMenu("mode", ModeMenu);
 		glutAttachMenu(GLUT_RIGHT_BUTTON);	//與右鍵關聯
 	}
