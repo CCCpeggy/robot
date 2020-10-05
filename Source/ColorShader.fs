@@ -2,6 +2,8 @@
 
 uniform sampler2D tex;
 uniform int Mode;
+uniform int Mode2;
+uniform float Scale;
 uniform int Time;
 
 out vec4 color;                                                                
@@ -83,7 +85,8 @@ void main(void)
 
         vec2 uv = fs_in.texcoord;
         vec2 center=vec2(0.5,0.5);
-        float dis=distance(uv, center) - Time * 0.0001;
+        int t = Time % 4000;
+        float dis=distance(uv, center) - t * 0.0001;
 
         if (dis > 0 && dis< 0.3) {
             float value=ripple(dis,5.,1.6,20.,3.);
@@ -91,17 +94,31 @@ void main(void)
             value+=ripple(distance(uv,center+vec2(0.35, 0)),2.,0.5,5.,5.);
 
             if (value > 0.3) {
-                color = vec4(1,1,1,1);
+                value /= 0.7;
+                color = vec4(value,value,value,1);
             }
         }
     }
     else if (Mode == 6) {
         vec3 mColor = vec3(1, 0, 0);
+        if (Mode2 == 1) {
+            mColor = vec3(0, 1, 0);
+        }
+        else if (Mode2 == 2) {
+            mColor = vec3(0, 0, 1);
+        }
+        else if (Mode2 == 3) {
+            mColor = vec3(1, 0.3, 1);
+        }
+        else if (Mode2 == 4) {
+            mColor = vec3(0.8, 0.8, 0.4);
+        }
 
         if (texture_color.a < 1) {
             vec2 coord = fs_in.texcoord * 2 - vec2(1, 1);
             float distance = sqrt(coord.x * coord.x + coord.y * coord.y);
-            if (/*distance > 0.5 &&*/  (int(abs((distance * 6 + Time * 0.0001)  ))) % 2 == 0) {
+            distance *= Scale;
+            if ((int(abs((distance * 6 + Time * 0.0001)  ))) % 2 == 0) {
                 color.xyz = mColor;
             }
             else {

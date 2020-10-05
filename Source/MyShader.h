@@ -15,6 +15,8 @@ protected:
 	GLuint locMode;
 	GLuint locMode2;
 	GLuint locTime;
+	GLuint locScale;
+	GLuint locEye;
 
 public:
 	MyShader(std::string vsPath = nullptr, std::string fsPath = nullptr) {
@@ -48,6 +50,8 @@ public:
 		locMode = glGetUniformLocation(program, "Mode");
 		locMode2 = glGetUniformLocation(program, "Mode2");
 		locTime = glGetUniformLocation(program, "Time");
+		locScale = glGetUniformLocation(program, "Scale");
+		locEye = glGetUniformLocation(program, "Eye");
 		glUseProgram(NULL);
 	}
 
@@ -60,6 +64,10 @@ public:
 		glUniformMatrix4fv(locModel, 1, GL_FALSE, &(*modelMt)[0][0]);
 	}
 
+	void setEye(glm::vec3 eye) {
+		glUniform3fv(locEye, 1, &(eye[0]));
+	}
+
 	void setMode(int mode) {
 		glUniform1i(locMode, mode);
 	}
@@ -70,6 +78,10 @@ public:
 
 	void setTime(long int time) {
 		glUniform1i(locTime, time % 100000000);
+	}
+
+	void setScale(float scale) {
+		glUniform1f(locScale, scale);
 	}
 
 	void use() {

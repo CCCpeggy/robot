@@ -36,6 +36,7 @@ namespace Menu{
 		glutAddMenuEntry("wave", Robot::MODE_WAVE);
 		glutAddMenuEntry("dance", Robot::MODE_DANCE);
 		glutAddMenuEntry("jump", Robot::MODE_JUMP);
+		glutAddMenuEntry("kick", Robot::MODE_CROUCH_DOWN);
 		glutAttachMenu(GLUT_RIGHT_BUTTON);	//與右鍵關聯
 
 		// ModeMenu = glutCreateMenu(ModeMenuEvents);//建立右鍵菜單
@@ -67,6 +68,7 @@ namespace Menu{
 		glutAddMenuEntry("mtl", 1);
 		glutAddMenuEntry("cartoon", 2);
 		glutAddMenuEntry("normal map", 3);
+		glutAddMenuEntry("matcap", 4);
 
 		glutAttachMenu(GLUT_RIGHT_BUTTON);	//與右鍵關聯
 

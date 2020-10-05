@@ -5,6 +5,7 @@
 #version 430
 
 uniform int Mode;
+uniform vec3 Eye;
 out vec4 vFragColor;
 
 //lighting color
@@ -17,6 +18,13 @@ in vec3 vVaryingLightDir;
 in vec2 UV;
 in vec3 Kd;
 float Shininess = 150.0;//for material specular
+uniform sampler2D tex;
+
+vec2 matcap(vec3 eye, vec3 normal) {
+  vec3 reflected = reflect(eye, normal);
+  float m = 2.8284271247461903 * sqrt( reflected.z+1.0 );
+  return reflected.xy / m + 0.5;
+}
 
 void main(void)
 { 
@@ -38,6 +46,7 @@ void main(void)
             spec = pow(spec, Shininess);
             vFragColor += specularColor * spec * 0.2;
         }
+
     }
     else if (Mode == 2) {
         vec4 color1;
@@ -58,6 +67,16 @@ void main(void)
     else if (Mode == 3) {
         vFragColor.xyz = vVaryingNormal;
         vFragColor.w = 1;
+    }
+    else if (Mode == 4) {
+       vec3 eye = normalize(Eye);
+       eye.z -= 1.4;
+       eye.x += 1,4;
+       vec2 uv = matcap(normalize(eye), normalize(vVaryingNormal)).xy;
+       vFragColor = vec4(
+          texture(tex, uv).rgb,
+          1.0
+        );
     }
     else {
         vFragColor = vec4(1,1,1,1);

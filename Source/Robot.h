@@ -13,6 +13,8 @@ public:
 	static const int MODE_WAVE;
 	static const int MODE_DANCE;
 	static const int MODE_JUMP;
+	static const int MODE_CROUCH_DOWN;
+	MyShader* shader;
 
 
 protected:
@@ -41,14 +43,15 @@ protected:
 	glm::vec3 pos[PARTSNUM];
 	float position;
 	float angle;
-	MyShader* shader;
+	GLuint textureID[4];
+	int texIdx;
 
 private:
 	int frame;
 	int mode;
 
 public:
-	Robot(MyShader* shader = nullptr):
+	Robot(MyShader* shader = nullptr) :
 		shader(shader),
 		body(shader, MyObject::DRAW_TYPE_INSTANCE),
 		dlefthand(shader, MyObject::DRAW_TYPE_INSTANCE),
@@ -66,6 +69,7 @@ public:
 		rightfoot(shader, MyObject::DRAW_TYPE_INSTANCE),
 		ball(shader, MyObject::DRAW_TYPE_INSTANCE),
 		frame(0),
+		texIdx(0),
 		mode(MODE_WALK)
 	{
 		initRobotPart();
@@ -119,6 +123,11 @@ public:
 		allObjs.push_back(&ball);
 		ball.init("../Assets/ball.obj", "../Assets/ball.mtl", 18);
 
+		loadTextures(textureID[0], "../Assets/Matcap1.jpg");
+		loadTextures(textureID[1], "../Assets/Matcap2.jpg");
+		loadTextures(textureID[2], "../Assets/Matcap3.jpg");
+		loadTextures(textureID[3], "../Assets/Matcap4.jpg");
+
 		setShaderType(1);
 	}
 	
@@ -132,9 +141,13 @@ public:
 			glm::vec3(0.0f, 0.0f, 0.0f)
 		};
 		for (auto offset : offsets) {
-			for (auto obj : allObjs) {
-				obj -> addOffset(offset);
-			}
+			addRobot(offset);
+		}
+	}
+
+	void addRobot(glm::vec3 offset) {
+		for (auto obj : allObjs) {
+			obj->addOffset(offset);
 		}
 	}
 
@@ -164,6 +177,9 @@ public:
 		}
 		else if (mode == MODE_JUMP) {
 			updateJumpFrame();
+		}
+		else if (mode == MODE_CROUCH_DOWN) {
+			updateCrouchDownFrame();
 		}
 		glm::mat4 Rotatation[PARTSNUM];
 		glm::mat4 Translation[PARTSNUM];
@@ -216,33 +232,41 @@ public:
 		righthand.setModelMt(&(body.modelMt * Translation[8] * Rotatation[8] * glm::translate(-pos[8])));
 		//=============================================================
 		//¥ª¸}
-		r = -10;
+		glm::vec4 leg;
 		Rotatation[12] = glm::rotate(DOR(alpha[12]), glm::vec3(1, 0, 0)) * glm::rotate(DOR(gamma[12]), glm::vec3(0, 0, 1)) * glm::rotate(DOR(beta[12]), glm::vec3(0, 1, 0));
 		Translation[12] = glm::translate(pos[12]);
-		uleftleg.setModelMt(&(this->modelMt * Translation[12] * Rotatation[12] * glm::translate(-pos[12])));
+		uleftleg.setModelMt(&(body.modelMt * Translation[12] * Rotatation[12] * glm::translate(-pos[12])));
 
+		leg.xyz = pos[13] - pos[12];
 		Rotatation[13] = Rotatation[12] * glm::rotate(DOR(alpha[13]), glm::vec3(1, 0, 0)) * glm::rotate(DOR(gamma[13]), glm::vec3(0, 0, 1)) * glm::rotate(DOR(beta[13]), glm::vec3(0, 1, 0));
-		Translation[13] = Translation[12] * glm::translate(glm::vec3(-r * cos(DOR(alpha[12])) * sin(DOR(gamma[12])), r * cos(DOR(alpha[12])) * cos(DOR(gamma[12])), r * sin(DOR(alpha[12])))) ;
-		dleftleg.setModelMt(&(this->modelMt * Translation[13] * Rotatation[13] * glm::translate(-pos[13])));
+		leg = leg * glm::rotate(DOR(alpha[12]), glm::vec3(1, 0, 0)) * glm::rotate(DOR(gamma[12]), glm::vec3(0, 0, 1));
+		Translation[13] = Translation[12] * glm::translate(glm::vec3(-leg.x, leg.y, -leg.z));
+		dleftleg.setModelMt(&(body.modelMt * Translation[13] * Rotatation[13] * glm::translate(-pos[13])));
 
+		leg.xyz = pos[14] - pos[13];
 		Rotatation[14] = Rotatation[13] * glm::rotate(DOR(alpha[14]), glm::vec3(1, 0, 0)) * glm::rotate(DOR(gamma[14]), glm::vec3(0, 0, 1)) * glm::rotate(DOR(beta[14]), glm::vec3(0, 1, 0));
-		Translation[14] = Translation[13] * glm::translate(glm::vec3(-r * cos(DOR(alpha[13] + alpha[12])) * sin(DOR(gamma[13] + gamma[12])), r * cos(DOR(alpha[13] + alpha[12])) * cos(DOR(gamma[13] + gamma[12])), r * sin(DOR(alpha[13] + alpha[12]))));
-		leftfoot.setModelMt(&(this->modelMt * Translation[14] * Rotatation[14] * glm::translate(-pos[14])));
+		leg = leg * glm::rotate(DOR(alpha[12] + alpha[13]), glm::vec3(1, 0, 0)) * glm::rotate(DOR(gamma[12] + gamma[13]), glm::vec3(0, 0, 1)) * glm::rotate(DOR(-beta[12]), glm::vec3(0, 1, 0));
+		Translation[14] = Translation[13] * glm::translate(glm::vec3(-leg.x, leg.y, -leg.z));
+		leftfoot.setModelMt(&(body.modelMt * Translation[14] * Rotatation[14] * glm::translate(-pos[14])));
 		//=============================================================
 		////¥k¸}
 		Rotatation[15] = glm::rotate(DOR(alpha[15]), glm::vec3(1, 0, 0)) * glm::rotate(DOR(gamma[15]), glm::vec3(0, 0, 1)) * glm::rotate(DOR(beta[15]), glm::vec3(0, 1, 0));
 		Translation[15] = glm::translate(pos[15]);
-		urightleg.setModelMt(&(this->modelMt * Translation[15] * Rotatation[15] * glm::translate(-pos[15])));
+		urightleg.setModelMt(&(body.modelMt * Translation[15] * Rotatation[15] * glm::translate(-pos[15])));
 
+		leg.xyz = pos[16] - pos[15];
 		Rotatation[16] = Rotatation[15] * glm::rotate(DOR(alpha[16]), glm::vec3(1, 0, 0)) * glm::rotate(DOR(gamma[16]), glm::vec3(0, 0, 1)) * glm::rotate(DOR(beta[16]), glm::vec3(0, 1, 0));
-		Translation[16] = Translation[15] * glm::translate(glm::vec3(-r * cos(DOR(alpha[15])) * sin(DOR(gamma[15])), r * cos(DOR(alpha[15])) * cos(DOR(gamma[15])), r * sin(DOR(alpha[15]))));
-		drightleg.setModelMt(&(this->modelMt * Translation[16] * Rotatation[16] * glm::translate(-pos[16])));
+		leg = leg * glm::rotate(DOR(alpha[15]), glm::vec3(1, 0, 0)) * glm::rotate(DOR(gamma[15]), glm::vec3(0, 0, 1)); 
+		Translation[16] = Translation[15] * glm::translate(glm::vec3(-leg.x, leg.y, -leg.z));
+		drightleg.setModelMt(&(body.modelMt * Translation[16] * Rotatation[16] * glm::translate(-pos[16])));
 
+		leg.xyz = pos[17] - pos[16];
 		Rotatation[17] = Rotatation[16] * glm::rotate(DOR(alpha[17]), glm::vec3(1, 0, 0)) * glm::rotate(DOR(gamma[17]), glm::vec3(0, 0, 1)) * glm::rotate(DOR(beta[17]), glm::vec3(0, 1, 0));
-		Translation[17] = Translation[16] * glm::translate(glm::vec3(-r * cos(DOR(alpha[16] + alpha[15])) * sin(DOR(gamma[16] + gamma[15])), r * cos(DOR(alpha[16] + alpha[15])) * cos(DOR(gamma[16] + gamma[15])), r * sin(DOR(alpha[16] + alpha[15]))));
-		rightfoot.setModelMt(&(this->modelMt * Translation[17] * Rotatation[17] * glm::translate(-pos[17])));
-		ball.setModelMt(&(this->modelMt * glm::scale(glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f) * 20.0f)));
+		leg = leg * glm::rotate(DOR(alpha[15] + alpha[16]), glm::vec3(1, 0, 0)) * glm::rotate(DOR(gamma[15] + gamma[16]), glm::vec3(0, 0, 1)) * glm::rotate(DOR(-beta[15]), glm::vec3(0, 1, 0));
+		Translation[17] = Translation[16] * glm::translate(glm::vec3(-leg.x, leg.y, -leg.z));
+		rightfoot.setModelMt(&(body.modelMt * Translation[17] * Rotatation[17] * glm::translate(-pos[17])));
 		//=============================================================
+		ball.setModelMt(&(this->modelMt * glm::scale(glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f) * 20.0f)));
 	}
 	int index = 14;
 	void keyUpdate(unsigned char key, int x, int y) {
@@ -325,9 +349,15 @@ public:
 	}
 
 	void updateIdleFrame() {
-		if (frame++) {
+		if (!frame) {
+			frame++;
 			reset();
 		}
+	}
+
+	void updateTexure() {
+		texIdx++;
+		texIdx %= 4;
 	}
 
 	void reset() {
@@ -347,10 +377,10 @@ public:
 		pos[9] = glm::vec3(-20, 6, 0);
 		pos[12] = glm::vec3(5.4, -18, 0);
 		pos[13] = glm::vec3(5.4, -28, 0);
-		pos[14] = glm::vec3(5.4, -37.3, 0);
+		pos[14] = glm::vec3(5.4, -37.7, 0);
 		pos[15] = glm::vec3(-5.4, -18, 0);
 		pos[16] = glm::vec3(-5.4, -28, 0);
-		pos[17] = glm::vec3(-5.4, -37.3, 0);
+		pos[17] = glm::vec3(-5.4, -37.7, 0);
 
 		alpha[2] = -20;
 		alpha[7] = -20;
@@ -421,9 +451,6 @@ public:
 		switch (frame / speed) {
 		case 0:
 			reset();
-			beta[3] = beta[8] = -90;
-			alpha[8] = 15;
-			alpha[8] = -15;
 			alpha[4] = 200;
 			alpha[8] = 200;
 			gamma[3] -= 45;
@@ -564,13 +591,13 @@ public:
 
 			break;
 		case 1:
-			gamma[12] += 10; 
+			gamma[12] += 10;
 			gamma[15] -= 10;
 			position += 1;
 			alpha[4] -= 20;
 			break;
 		case 2:
-			gamma[12] += 10; 
+			gamma[12] += 10;
 			gamma[15] -= 10;
 			position += 1;
 			alpha[4] -= 20;
@@ -584,14 +611,14 @@ public:
 
 			break;
 		case 4:
-			gamma[12] += 10; 
+			gamma[12] += 10;
 			gamma[15] -= 10;
 			position += 1;
 			alpha[4] -= 20;
 
 			break;
 		case 5:
-			gamma[12] += 10; 
+			gamma[12] += 10;
 			gamma[15] -= 10;
 			position += 1;
 			alpha[4] -= 20;
@@ -621,7 +648,7 @@ public:
 
 			break;
 		case 9:
-			gamma[12] -= 10; 
+			gamma[12] -= 10;
 			gamma[15] += 10;
 			position -= 1;
 			alpha[4] += 20;
@@ -646,9 +673,75 @@ public:
 			break;
 		}
 		alpha[9] = alpha[4];
+	}
+
+	void updateCrouchDownFrame() {
+		int speed = 6;
+		if (frame >= 27 * speed) {
+			frame = 0;
+		}
+		if (frame++ % speed) return;
+		switch (frame / speed) {
+		case 0:
+			reset();
+			gamma[2] = -75;
+			gamma[3] = 45;
+			gamma[4] = 45;
+			gamma[7] = 75;
+			gamma[8] = -45;
+			gamma[9] = -45;
+			break;
+		case 1:
+			alpha[13] = 10;
+			break;
+		case 2:
+		case 3:
+		case 4:
+		case 5:
+			alpha[12] += 10;
+			alpha[14] += 5;
+			break; // alpha[12] = 40, alpha[14] = 20
+		case 6:
+		case 7:
+		case 8:
+		case 9:
+		case 10:
+			alpha[13] += 10;
+			alpha[14] -= 5;
+			break;// alpha[13] = 60, alpha[14] = -5
+		case 11:
+		case 12:
+		case 13:
+		case 14:
+		case 15:
+			alpha[14] += 1;
+			alpha[12] -= 15;
+			alpha[13] -= 5;
+			break;// alpha[12] = -35, alpha[13] = 35
+		case 16:
+		case 17:
+		case 18:
+		case 19:
+			alpha[13] -= 5;
+			break;//alpha[13] = 15
+		case 20:
+		case 21:
+		case 22:
+		case 23:
+		case 24:
+			alpha[12] += 5;
+			alpha[13] -= 3;
+			break;//  alpha[12] = -10, alpha[13] = 0
+		case 25:
+		case 26:
+			alpha[12] += 5;
+			break;
+		}
 
 	}
 	void draw() {
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, textureID[texIdx]);
 		for (std::vector<MyObject*>::iterator iter = allObjs.begin();
 			iter != allObjs.end();
 			iter++
@@ -671,6 +764,11 @@ public:
 		shader->use();
 		shader->setMode(type);
 	}
+
+	void setEye(glm::vec3 eye) {
+		shader->use();
+		shader->setEye(eye);
+	}
 };
 
 const int Robot::MODE_WALK = 1;
@@ -679,5 +777,6 @@ const int Robot::MODE_RUN = 2;
 const int Robot::MODE_WAVE = 3;
 const int Robot::MODE_DANCE = 4;
 const int Robot::MODE_JUMP = 5;
+const int Robot::MODE_CROUCH_DOWN = 6;
 
 #endif

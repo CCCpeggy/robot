@@ -21,10 +21,13 @@ public:
 	static const int SHADER_MODE_ANDROID;
 
 	int mode;
+	int mode2;
+	float scale;
 	static const GLfloat window_positions[16];
-	FrameBuffer():mode(SHADER_MODE_NORMAL)
+	FrameBuffer():mode(SHADER_MODE_NORMAL),
+		mode2(-1),
+		scale(1)
 	{
-
 	}
 	void init()
 	{
@@ -44,6 +47,9 @@ public:
 		glEnableVertexAttribArray(1);
 
 		glGenFramebuffers(1, &FBO);
+
+		updateMode2();
+		setScale(true, 0);
 	}
 
 	void reshape(int width, int height)
@@ -93,6 +99,19 @@ public:
 
 	void switchMode(int newMode) {
 		mode = newMode;
+	}
+
+	void updateMode2() {
+		grayShader->use();
+		mode2++;
+		mode2 %= 5;
+		grayShader->setMode2(mode2 + 1);
+	}
+
+	void setScale(bool mode, float rate) {
+		scale += scale * (mode ? -rate : rate);
+		grayShader->use();
+		grayShader->setScale(scale);
 	}
 
 };

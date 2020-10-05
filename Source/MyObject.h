@@ -226,4 +226,5 @@ public:
 const int MyObject::DRAW_TYPE_INSTANCE = 0;
 const int MyObject::DRAW_TYPE_NORMAL = 1;
 const int MyObject::DRAW_TYPE_ELEMENT = 2;
+
 #endif

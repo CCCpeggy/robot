@@ -163,3 +163,30 @@ void FreeShaderSource(char** srcp)
 	delete srcp;
 }
 
+
+void loadTextures(GLuint& textureID, const char* texturePath)
+{
+	glGenTextures(1, &textureID);
+	glBindTexture(GL_TEXTURE_2D, textureID);
+
+	TextureData texData = Load_png(texturePath);
+	if (texData.data != nullptr)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texData.width, texData.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, texData.data);
+		delete[] texData.data;
+	}
+	else
+	{
+		printf("Load texture file error %s\n", texturePath);
+		return;
+	}
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	// CheckGLError();
+}
